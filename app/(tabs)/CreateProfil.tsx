@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateProfil({ navigation }) {
     // État pour suivre l'étape actuelle et stocker les informations
     const [step, setStep] = useState(1);
     const [userData, setUserData] = useState({
+        username: '',
         genre: null,
         age: '',
         poids: '',
@@ -38,11 +40,36 @@ export default function CreateProfil({ navigation }) {
     const selectLevel = (level) => {
         setUserData({ ...userData, level });
     };
+    const saveData = async () => {
+        try {
+            await AsyncStorage.setItem('userProfile', JSON.stringify(userData));
+            navigation.navigate('Home');
+        } catch (error) {
+            console.error("Failed to save data", error);
+        }
+    };
 
     return (
+        
         <View className="flex-1 justify-center items-center bg-gray-100 space-y-6 p-4">
             {/* Étape de sélection du genre */}
             {step === 1 && (
+                <>
+                    <Text className="text-black text-center font-semibold text-3xl mb-6">
+                        Choisis un pseudo
+                    </Text>
+                    <TextInput
+                        className="bg-white rounded-lg p-4 shadow-md text-2xl w-64 text-center"
+                        placeholder="Saisissez votre pseudo"
+                        value={userData.username}
+                        onChangeText={(value) => setUserData({ ...userData, username: value })}
+                    />
+                    <TouchableOpacity onPress={nextStep} className="bg-blue-500 rounded-full p-4 mt-4">
+                        <Text className="text-white text-center font-semibold text-2xl">Suivant</Text>
+                    </TouchableOpacity>
+                </>
+            )}
+            {step === 2 && (
                 <>
                     <Text className="text-black text-center font-semibold text-5xl mb-6">
                         Quel est ton genre ?
@@ -70,7 +97,7 @@ export default function CreateProfil({ navigation }) {
             )}
 
             {/* Étape de sélection de l'âge */}
-            {step === 2 && (
+            {step === 3 && (
                 <>
                     <Text className="text-black text-center font-semibold text-3xl mb-6">
                         Quel est ton âge ?
@@ -89,7 +116,7 @@ export default function CreateProfil({ navigation }) {
             )}
 
             {/* Étape de sélection du poids */}
-            {step === 3 && (
+            {step === 4 && (
                 <>
                     <Text className="text-black text-center font-semibold text-3xl mb-6">
                         Quel est ton poids ?
@@ -108,7 +135,7 @@ export default function CreateProfil({ navigation }) {
             )}
 
             {/* Étape de sélection de la taille */}
-            {step === 4 && (
+            {step === 5 && (
                 <>
                     <Text className="text-black text-center font-semibold text-3xl mb-6">
                         Quelle est ta taille ?
@@ -127,7 +154,7 @@ export default function CreateProfil({ navigation }) {
             )}
 
             {/* Étape de sélection du goal */}
-            {step === 5 && (
+            {step === 6 && (
                 <>
                     <Text className="text-black text-center font-semibold text-3xl mb-6">
                         Quel est ton goal ?
@@ -154,27 +181,23 @@ export default function CreateProfil({ navigation }) {
             )}
 
             {/* Étape de sélection du niveau */}
-            {step === 6 && (
+            {step === 7 && (
                 <>
                     <Text className="text-black text-center font-semibold text-3xl mb-6">
                         Quel est ton niveau ?
                     </Text>
                     {['Débutant', 'Intermédiaire', 'Avancé'].map((level) => (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             key={level}
-                            onPress={() => selectLevel(level)}
-                            className={`w-64 p-4 my-2 rounded-full flex justify-center items-center shadow-md ${
-                                userData.level === level ? 'bg-blue-500' : 'bg-gray-200'
-                            }`}
+                            onPress={() => setUserData({ ...userData, level })}
+                            className={`w-64 p-4 my-2 rounded-full flex justify-center items-center shadow-md ${userData.level === level ? 'bg-blue-500' : 'bg-gray-200'}`}
                         >
-                            <Text className={`text-center font-semibold text-2xl ${
-                                userData.level === level ? 'text-white' : 'text-black'
-                            }`}>
+                            <Text className={`text-center font-semibold text-2xl ${userData.level === level ? 'text-white' : 'text-black'}`}>
                                 {level}
                             </Text>
                         </TouchableOpacity>
                     ))}
-                    <TouchableOpacity onPress={() => {console.log(userData); navigation.navigate('Home');}} className="bg-green-500 rounded-full p-4 mt-4">
+                    <TouchableOpacity onPress={saveData} className="bg-green-500 rounded-full p-4 mt-4">
                         <Text className="text-white text-center font-semibold text-2xl">Terminer</Text>
                     </TouchableOpacity>
                 </>
