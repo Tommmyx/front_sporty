@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Modal, Text, Image, ScrollView, Dimensions } from 'react-native';
+import { BarChart, LineChart } from "react-native-gifted-charts";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCrown, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 export default function ProfileIcon({ navigation }) {
     // Responsive design test
@@ -42,6 +43,12 @@ export default function ProfileIcon({ navigation }) {
 
     const openProfile = () => setModalVisible(true);
     const closeProfile = () => setModalVisible(false);
+    const openSuccess = () => setModalVisible(false);
+
+    /* Test Chart */
+    const data=[ {value:50}, {value:80}, {value:90}, {value:70} , {value:60}]
+    /* See https://gifted-charts.web.app/ */
+
 
     return (
         <View style={{ position: 'absolute', top: 40, right: 20 }}>
@@ -61,7 +68,7 @@ export default function ProfileIcon({ navigation }) {
                 onRequestClose={closeProfile}
             >
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                    <View style={{ width: width * 0.5, padding: 20, backgroundColor: 'white', borderRadius: 10 }}>
+                    <View style={{ width: width * 0.3, padding: 20, backgroundColor: 'white', borderRadius: 10 }}>
                         {/* Bouton pour fermer le modal */}
                         <TouchableOpacity onPress={closeProfile} style={{ alignSelf: 'flex-start' }}>
                             <FontAwesomeIcon icon={faXmark} size={40} color="black" />
@@ -87,8 +94,28 @@ export default function ProfileIcon({ navigation }) {
                             <Text>Aucun profil trouvé</Text>
                         )}
 
+                        {data ? (
+                            <>
+                            <BarChart data = {data} />
+                            <LineChart data = {data} />
+                            </>
+                        ) : (
+                            <Text>Aucunes données trouvées</Text>
+                        )}
+                        <TouchableOpacity 
+                            onPress={openSuccess} 
+                            className="bg-yellow-400 self-center justify-center items-center p-2 rounded-lg w-48 h-16"
+                        >
+                            <FontAwesomeIcon icon={faCrown} size={40} color="#A38A00" />
+                            <Text style={{ color: '#A38A00'}} className="font-bold text-center">SUCCESS</Text>
+
+                        </TouchableOpacity>
+
+
+                        
+
                         {/* Affichage des données utilisateur */}
-                        {userData ? (
+                        {/*userData ? (
                             <>
                                 <Text>Pseudo: {userData.username}</Text>
                                 <Text>Genre: {userData.genre}</Text>
@@ -100,7 +127,7 @@ export default function ProfileIcon({ navigation }) {
                             </>
                         ) : (
                             <Text>Aucun profil trouvé</Text>
-                        )}
+                        )*/}
 
                      
                     </View>
