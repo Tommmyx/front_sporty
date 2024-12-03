@@ -1,26 +1,41 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View } from 'react-native';
 import { Canvas } from '@react-three/fiber';
-import { PerspectiveCamera, OrbitControls, useGLTF } from '@react-three/drei';
+import { PerspectiveCamera, OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import Profile from './Profile';
 
-export default function HomeScreen({ navigation }) {
-  const { scene } = useGLTF('../../assets/3D/Totoro.glb'); // Remplace par l'URL ou le chemin local du modèle
+const AnimatedMesh = () => {
   const meshRef = useRef();
+  const { scene, animations } = useGLTF('../../assets/3D/avatar.glb'); 
+  const { actions } = useAnimations(animations, scene); 
+
+  useEffect(() => {
+    if (actions && actions['curl']) {
+      actions['curl'].reset().fadeIn(0.5).play();
+    }
+    return () => {
+      if (actions && actions['curl']) {
+        actions['curl'].fadeOut(0.5);
+      }
+    };
+  }, [actions]);
 
   return (
-    <View className="flex-1 justify-center items-center bg-gray-100">
+    <mesh ref={meshRef} position={[0, 0, 0]}>
+      <primitive object={scene} />
+    </mesh>
+  );
+};
+
+export default function HomeScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f3f3' }}>
       <Profile navigation={navigation} />
-      <Canvas style={{ width: '100%', height: '100%', zIndex: -1}}>
-      <PerspectiveCamera makeDefault position={[0, 0, 50]} fov={60} />
+      <Canvas style={{ width: '100%', height: '100%' }}>
+        <PerspectiveCamera makeDefault position={[0, 0, 50]} fov={60} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
-        
-        {/* Chargement du modèle 3D */}
-        <mesh position={[0, 0, 0]}>
-          <primitive object={scene} />
-        </mesh>
-
+        <AnimatedMesh />
         <OrbitControls />
       </Canvas>
     </View>
