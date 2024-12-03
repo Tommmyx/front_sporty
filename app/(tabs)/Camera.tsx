@@ -42,18 +42,19 @@ export default function CameraScreen() {
   }, []);
 
   useEffect(() => {
-    if (permission && permission.granted) {
+    if (permission && permission.granted && isFocused && isCameraReady) {
       intervalRef.current = setInterval(() => {
         captureFrame();
-      }, 1000); // Emit frames every 200ms
+      }, 200);
     } else {
       clearInterval(intervalRef.current);
     }
-
+  
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [permission, isFocused]);
+  }, [permission, isFocused, isCameraReady]);
+  
 
   const toggleCameraFacing = () => {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
