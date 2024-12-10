@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet  } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet  } from 'react-native';
 import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera, OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import Profile from './Profile';
@@ -35,12 +35,15 @@ export default function HomeScreen({ navigation }) {
   const handleButtonPress = () => {
     console.log('Bouton de cintre pressé');
   };
+  const openBattlePass = () => {
+
+  };
 
   return (
     <View style={{ flex: 1 }}>
       <Profile navigation={navigation} />
       <BackgroundHomeScreen />
-      <Canvas style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <Canvas style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}>
         <PerspectiveCamera makeDefault position={[0, 0, 100]} fov={80} />
         <ambientLight intensity={0.9} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
@@ -53,6 +56,13 @@ export default function HomeScreen({ navigation }) {
       >
         <FontAwesomeIcon icon={faShirt} /> 
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.battlePass}
+        onPress={openBattlePass}
+      >
+        <Text>Battle Pass</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -71,5 +81,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
+  },
+  battlePass: {
+    position: 'absolute',
+    right: '20%', 
+    bottom: '15%', 
+    transform: [{ translateY: -15 }], 
+    backgroundColor: 'white',
+    padding: 10,
+    elevation: 5, 
+    
+
   },
 });

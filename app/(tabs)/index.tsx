@@ -7,6 +7,8 @@ import CreateProfil from './CreateProfil';
 
 import "../../global.css"
 import Boutique from './Boutique';
+import Communaute from './Communaute';
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStore, faHouse, faGlobe } from '@fortawesome/free-solid-svg-icons';
 
@@ -61,7 +63,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Communauté"
-          component={CameraScreen}
+          component={Communaute}
           options={{ 
             headerShown: false, 
             title: 'Communauté',
