@@ -2,6 +2,8 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState, useRef, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+import io from 'socket.io-client';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -10,72 +12,103 @@ export default function CameraScreen() {
   const intervalRef = useRef(null);
   const isFocused = useIsFocused();
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [bicepsCount, setBicepsCount] = useState(0);
+
+  const socket = useRef(null);
 
   useEffect(() => {
-    if (permission && permission.granted && isFocused) {
+    // Establish socket connection
+    socket.current = io('http://127.0.0.1:5000');
+
+    socket.current.on('connect', () => {
+      console.log('Socket connected');
+    });
+
+    socket.current.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    // Listen for biceps count updates from the server
+    socket.current.on('biceps_update', (data) => {
+      console.log('Biceps Update:', data);
+      setBicepsCount(data.nbr_curl_biceps_done);
+    });
+
+    return () => {
+      if (socket.current) {
+        socket.current.disconnect();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (permission && permission.granted && isFocused && isCameraReady) {
       intervalRef.current = setInterval(() => {
         captureFrame();
-      }, 1000);
+      }, 200);
     } else {
       clearInterval(intervalRef.current);
     }
-
+  
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [permission, isFocused]);
+  }, [permission, isFocused, isCameraReady]);
+  
 
   const toggleCameraFacing = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
+
   const handleCameraReady = () => {
     setIsCameraReady(true);
   };
 
   const captureFrame = async () => {
     if (cameraRef.current && isCameraReady) {
-      const photo = await cameraRef.current.takePictureAsync();
-      const frame = photo.uri;
-      console.log("Frame captured:", frame);
-      await sendFrameToBackend(frame);
-    } else {
-      console.log("Camera ref is null");
+      try {
+        const photo = await cameraRef.current.takePictureAsync();
+        const frameUri = await resizeImage(photo.uri);
+        emitFrame(frameUri); // Send the frame to the server
+      } catch (error) {
+        console.error('Error capturing frame:', error);
+      }
     }
   };
 
-  const base64ToBlob = (base64Data, contentType) => {
-    const byteCharacters = atob(base64Data.split(',')[1]);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: contentType });
+  const resizeImage = async (uri) => {
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+      uri,
+      [
+        { resize: { width: 800, height: 600 } }, // Redimensionnement
+      ],
+      { compress: 0.9, format: ImageManipulator.SaveFormat.JPEG } // Compression et format
+    );
+    return manipulatedImage.uri;
   };
+  
 
-  const sendFrameToBackend = async (frameUri) => {
-    const blob = base64ToBlob(frameUri, 'image/png');
-    const formData = new FormData();
-    const uniqueName = `frame_${Date.now()}.png`;
-    formData.append('frame', blob, uniqueName);
-    console.log("FormData entries:", [...formData]);
-    formData.append('frame', {
-      uri: frameUri,
-      name: uniqueName,
-      type: 'image/jpeg',
-    });
-    try {
-      await fetch('http://127.0.0.1:5000/frame-analysis', {
-        method: 'POST',
-        body: formData,
-      });
-    } catch (error) {
-      console.error(error);
+  const emitFrame = async (frameUri) => {
+    if (socket.current) {
+      try {
+        // Lire le fichier image en binaire
+        const response = await fetch(frameUri);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        const binaryData = new Uint8Array(arrayBuffer);
+  
+        // Envoyer l'image via Socket.IO
+        socket.current.emit('frame', binaryData);
+        console.log('Frame emitted successfully');
+      } catch (error) {
+        console.error('Error emitting frame:', error);
+      }
     }
   };
+  
 
   if (!permission) {
-    return <View />; 
+    return <View />;
   }
 
   if (!permission.granted) {
@@ -90,14 +123,19 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       {isFocused && (
-        <CameraView style={styles.camera} facing={facing} ref={cameraRef} onCameraReady={handleCameraReady}>
+        <CameraView
+          style={styles.camera}
+          facing={facing}
+          ref={cameraRef}
+          onCameraReady={handleCameraReady}
+        >
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
               <Text style={styles.text}>Flip Camera</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={captureFrame}>
-              <Text style={styles.text}>Capture Frame</Text>
-            </TouchableOpacity>
+          </View>
+          <View style={styles.counterContainer}>
+            <Text style={styles.counterText}>Biceps Count: {bicepsCount}</Text>
           </View>
         </CameraView>
       )}
@@ -129,6 +167,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  counterContainer: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+  },
+  counterText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
