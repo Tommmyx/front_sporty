@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function CreateProfil({ navigation }) {
+    const { width, height } = Dimensions.get('window'); // Obtenir la largeur et la hauteur de l'écran
+    const circleSize = Math.min(width, height) * 0.3; // 30% du côté le plus court
+
     // État pour suivre l'étape actuelle et stocker les informations
     const [step, setStep] = useState(1);
     const [userData, setUserData] = useState({
@@ -44,27 +47,42 @@ export default function CreateProfil({ navigation }) {
             {/* Étape de sélection du genre */}
             {step === 1 && (
                 <>
-                    <Text className="text-black text-center font-semibold text-5xl mb-6">
+                    <Text className="text-black text-center font-semibold text-2xl sm:text-4xl mb-6">
                         Quel est ton genre ?
                     </Text>
 
-                    <TouchableOpacity 
+                    {/* Cercle pour Homme */}
+                    <TouchableOpacity
                         onPress={() => selectGenre('Homme')}
-                        className="w-64 h-64 bg-[#FF9119] font-medium rounded-full flex justify-center items-center shadow-md mb-4">
-                        <Icon name="mars" size={120} color="#fff" />
-                        <Text className="text-white text-center font-semibold">Homme</Text>
+                        style={{ width: circleSize, height: circleSize }}
+                        className="bg-[#FF9119] font-medium rounded-full flex justify-center items-center shadow-md mb-4"
+                    >
+                        <Icon name="mars" size={circleSize * 0.4} color="#fff" />
+                        <Text className="text-white text-center font-semibold text-lg sm:text-xl">
+                            Homme
+                        </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    {/* Cercle pour Femme */}
+                    <TouchableOpacity
                         onPress={() => selectGenre('Femme')}
-                        className="w-64 h-64 bg-[#008000] font-medium rounded-full flex justify-center items-center shadow-md mb-4">
-                        <Icon name="venus" size={120} color="#fff" />
-                        <Text className="text-white text-center font-semibold">Femme</Text>
+                        style={{ width: circleSize, height: circleSize }}
+                        className="bg-[#008000] font-medium rounded-full flex justify-center items-center shadow-md mb-4"
+                    >
+                        <Icon name="venus" size={circleSize * 0.4} color="#fff" />
+                        <Text className="text-white text-center font-semibold text-lg sm:text-xl">
+                            Femme
+                        </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => selectGenre('Ne pas spécifier')} 
-                        className="bg-white rounded-full p-4 shadow-md mt-4">
-                        <Text className="text-black text-center font-semibold text-4xl">Ne pas spécifier</Text>
+                    {/* Bouton "Ne pas spécifier" */}
+                    <TouchableOpacity
+                        onPress={() => selectGenre('Ne pas spécifier')}
+                        className="bg-white rounded-full px-6 py-3 sm:px-8 sm:py-4 shadow-md mt-4"
+                    >
+                        <Text className="text-black text-center font-semibold text-lg sm:text-2xl">
+                            Ne pas spécifier
+                        </Text>
                     </TouchableOpacity>
                 </>
             )}

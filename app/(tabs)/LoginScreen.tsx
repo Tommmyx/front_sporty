@@ -88,7 +88,7 @@ export default function LoginScreen({ navigation }) {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('CreateProfil')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Test')}>
           <Text className="text-gray-500 text-sm sm:text-base italic underline text-center">
             Pas de compte ? Je m'inscris !
           </Text>
