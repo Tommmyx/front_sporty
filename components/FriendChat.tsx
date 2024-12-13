@@ -19,13 +19,13 @@ export default function FriendChatModal({ visible, onClose, item, navigation }) 
     } else {
         navigation.setOptions({ 
           tabBarStyle: {
-            width: '80%',
-            left: '10%',
+            width: '90%',
+            left: '5%',
             borderRadius: 15,
             backgroundColor: '#6200ea',
             height: 60,
             position: 'absolute',
-            bottom: 20,
+            bottom: 10,
             shadowColor: '#000',
             shadowOpacity: 0.2,
             shadowRadius: 8,

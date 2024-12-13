@@ -9,7 +9,7 @@ import { faShirt } from '@fortawesome/free-solid-svg-icons';
 
 const AnimatedMesh = () => {
   const meshRef = useRef();
-  const modelPath = require('../../assets/3D/avatar.glb');
+  const modelPath = require('../../assets/3D/testsporty.glb');
   const { scene, animations } = useGLTF(modelPath); 
   const { actions } = useAnimations(animations, scene); 
 

@@ -80,7 +80,7 @@ export default function CameraScreen() {
     const manipulatedImage = await ImageManipulator.manipulateAsync(
       uri,
       [
-        { resize: { width: 800, height: 600 } }, // Redimensionnement
+        { resize: { width: 320, height: 240 } }, // Redimensionnement
       ],
       { compress: 0.9, format: ImageManipulator.SaveFormat.JPEG } // Compression et format
     );
