@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -7,36 +7,64 @@ import {
     StyleSheet,
     Modal,
     ScrollView,
+    Dimensions,
 } from 'react-native';
 import * as FileSystem from 'expo-file-system';
+import { useFocusEffect } from '@react-navigation/native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faX, faPlus} from '@fortawesome/free-solid-svg-icons';
 
-export default function ExploreRoutine({ navigation }) {
+
+
+export default function StartTraining({ navigation }) {
     const [routines, setRoutines] = useState([]);
-    const [selectedRoutine, setSelectedRoutine] = useState(null); // Pour la routine sélectionnée
-    const [isModalVisible, setIsModalVisible] = useState(false); // État du modal
+    const [selectedRoutine, setSelectedRoutine] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     // Fonction pour charger les séances sauvegardées
     const loadRoutines = async () => {
         try {
             const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
             const sessionFiles = files.filter(file => file.endsWith('.json'));
-
+    
             const loadedRoutines = await Promise.all(
                 sessionFiles.map(async (file) => {
-                    const content = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}${file}`);
-                    return JSON.parse(content);
+                    try {
+                        const content = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}${file}`);
+                        const parsedContent = JSON.parse(content);
+    
+                        if (parsedContent.name && parsedContent.exercises) {
+                            return { ...parsedContent, fileName: file };
+                        }
+                    } catch (error) {
+                        console.warn(`Fichier ignoré (non valide) : ${file}`);
+                    }
+                    return null; 
                 })
             );
-
-            setRoutines(loadedRoutines);
+    
+            // Enleve les routine null 
+            setRoutines(loadedRoutines.filter(routine => routine !== null));
         } catch (error) {
             console.error('Erreur lors du chargement des séances :', error);
         }
     };
+    
 
-    useEffect(() => {
-        loadRoutines();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            loadRoutines();
+        }, [])
+    );
+
+    const deleteRoutine = async (fileName) => {
+        try {
+            await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${fileName}`);
+            loadRoutines(); 
+        } catch (error) {
+            console.error('Erreur lors de la suppression de la séance :', error);
+        }
+    };
 
     const openModal = (routine) => {
         setSelectedRoutine(routine);
@@ -50,27 +78,36 @@ export default function ExploreRoutine({ navigation }) {
 
     const startActivity = () => {
         closeModal();
-        navigation.navigate('CameraScreen', { routine: selectedRoutine }); // Exemple de navigation
+        navigation.navigate('TrainingScreen', { routine: selectedRoutine });
+    };
+
+    const addRoutine = () => {
+        navigation.navigate('ExploreRoutine');
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Séances sauvegardées</Text>
 
-            {/* Liste des routines */}
             <FlatList
                 data={routines}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.listItem} onPress={() => openModal(item)}>
-                        <Text style={styles.listItemText}>{item.name}</Text>
-                        <Text style={styles.listDescription}>{item.description}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.listItem}>
+                        <TouchableOpacity style={styles.listItemContent} onPress={() => openModal(item)}>
+                            <View>
+                                <Text style={styles.listItemText}>{item.name}</Text>
+                                <Text style={styles.listDescription}>{item.description}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => deleteRoutine(item.fileName)}>
+                            <FontAwesomeIcon icon={faX} />
+                        </TouchableOpacity>
+                    </View>
                 )}
                 contentContainerStyle={styles.listContainer}
             />
 
-            {/* Modal pour afficher les détails */}
             {selectedRoutine && (
                 <Modal
                     visible={isModalVisible}
@@ -109,9 +146,16 @@ export default function ExploreRoutine({ navigation }) {
                     </View>
                 </Modal>
             )}
+
+            <TouchableOpacity style={styles.addRoutineButton} onPress={addRoutine}>
+                <FontAwesomeIcon icon={faPlus} size={25} />
+            </TouchableOpacity>
         </View>
     );
 }
+
+const { width } = Dimensions.get('window');
+const buttonSize = width * 0.15;
 
 const styles = StyleSheet.create({
     container: {
@@ -129,11 +173,17 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     listItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: '#e5e7eb',
         paddingVertical: 16,
         paddingHorizontal: 20,
         marginBottom: 10,
         borderRadius: 10,
+    },
+    listItemContent: {
+        flex: 1,
     },
     listItemText: {
         fontSize: 18,
@@ -202,5 +252,21 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    addRoutineButton: {
+        backgroundColor: '#ececec',
+        width: buttonSize, 
+        height: buttonSize,
+        borderRadius: buttonSize / 2, 
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        marginBottom: 100,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+        
     },
 });

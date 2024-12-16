@@ -7,9 +7,12 @@ import {
     FlatList,
     StyleSheet,
     Alert,
-    Modal
+    Modal,
+    Dimensions,
 } from 'react-native';
 import * as FileSystem from 'expo-file-system';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
 
 export default function ExploreRoutine({ navigation }) {
     const [sessionName, setSessionName] = useState('');
@@ -30,7 +33,7 @@ export default function ExploreRoutine({ navigation }) {
         setExerciseName('');
         setExerciseTime('');
         setRestTime('');
-        setIsModalVisible(false);
+        setIsModalVisible(false); 
     };
 
     const saveSession = async () => {
@@ -49,7 +52,7 @@ export default function ExploreRoutine({ navigation }) {
 
         try {
             await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(session));
-            Alert.alert('Succès', `Votre séance a été sauvegardée avec succès dans ${fileUri} !`);
+            Alert.alert('Succès', `Votre séance a été sauvegardée avec succès !`);
         } catch (error) {
             Alert.alert('Erreur', `Une erreur est survenue lors de la sauvegarde : ${error.message}`);
         }
@@ -57,6 +60,7 @@ export default function ExploreRoutine({ navigation }) {
         setSessionName('');
         setDescription('');
         setExercises([]);
+        navigation.navigate('StartTraining');
     };
 
     return (
@@ -98,7 +102,7 @@ export default function ExploreRoutine({ navigation }) {
             />
 
             <TouchableOpacity style={styles.saveButton} onPress={saveSession}>
-                <Text style={styles.saveButtonText}>Sauvegarder la séance</Text>
+                <FontAwesomeIcon icon={faSave} size={20}/>
             </TouchableOpacity>
 
             <Modal
@@ -155,6 +159,9 @@ export default function ExploreRoutine({ navigation }) {
     );
 }
 
+const { width } = Dimensions.get('window');
+const buttonSize = width * 0.15;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -201,11 +208,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     saveButton: {
-        backgroundColor: '#007bff',
-        padding: 15,
-        borderRadius: 8,
+        backgroundColor: '#ececec',
+        width: buttonSize, 
+        height: buttonSize,
+        borderRadius: buttonSize / 2, 
+        justifyContent: 'center',
         alignItems: 'center',
+        alignSelf: 'center',
         marginBottom: 100,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     saveButtonText: {
         color: '#fff',

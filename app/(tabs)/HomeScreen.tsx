@@ -1,37 +1,175 @@
-import React, { useRef, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet  } from 'react-native';
-import { Canvas } from '@react-three/fiber';
-import { PerspectiveCamera, OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
-import Profile from './Profile';
-import BackgroundHomeScreen from '../../components/BackgroundHomeScreen';
+import {
+  View,
+  StyleSheet,
+  PanResponder,
+  GestureResponderEvent,
+  PanResponderGestureState,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
+import { Renderer } from "expo-three";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  AmbientLight,
+  DirectionalLight,
+  PerspectiveCamera,
+  Scene,
+  AnimationMixer,
+  Clock,
+  LoopOnce,
+  LoopRepeat
+} from "three";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faShirt } from '@fortawesome/free-solid-svg-icons';
 
-const AnimatedMesh = () => {
-  const meshRef = useRef();
-  const modelPath = require('../../assets/3D/testsporty.glb');
-  const { scene, animations } = useGLTF(modelPath); 
-  const { actions } = useAnimations(animations, scene); 
+import { loadModel } from "../utils/3d";
+import Profile from "./Profile";
 
-  useEffect(() => {
-    if (actions && actions['curl']) {
-      actions['curl'].reset().fadeIn(0.5).play();
-    }
-    return () => {
-      if (actions && actions['curl']) {
-        actions['curl'].fadeOut(0.5);
-      }
-    };
-  }, [actions]);
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
-      <primitive object={scene} />
-    </mesh>
-  );
+const modelFBX = {
+  avatar: {
+    type: "fbx",
+    name: "avatar",
+    isometric: false,
+    model: require("../../assets/3D/animation.fbx"),
+    textures: [{ image: require("../../assets/3D/Image_0.jpg") }],
+    scale: {
+      x: 1,
+      y: 1,
+      z: 1,
+    },
+    position: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    animation: {
+      path: require("../../assets/3D/animation.fbx"),
+    },
+  },
 };
 
+const onContextCreate = async (gl: any, selected: any, setModelRef: any, setPlayAnimation: any) => {
+  const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
+
+  const renderer = new Renderer({ gl });
+  renderer.setSize(width, height);
+
+  const camera = new PerspectiveCamera(75, width / height, 0.1, 1500);
+  camera.position.set(0, 130, 900);
+
+  const scene = new Scene();
+
+  // Lighting setup
+  const ambientLight = new AmbientLight(0xffffff, 2);
+  scene.add(ambientLight);
+
+  const directionalLight = new DirectionalLight(0xffeedd, 1.5);
+  directionalLight.position.set(100, 300, 100);
+  directionalLight.castShadow = true;
+  scene.add(directionalLight);
+
+  // Load model and animations
+  const { obj, mixer, animations } = await loadModel(selected);
+
+  // Store the current animation
+  let currentAction = null;
+
+  // Function to play a specific animation
+  const playAnimationOnce = (animationName) => {
+    const action = mixer.clipAction(animations.find(anim => anim.name === animationName));
+
+    if (currentAction) {
+      currentAction.stop();  
+    }
+
+    action.setLoop(LoopOnce, 1);  
+    action.reset().play(); 
+    currentAction = action;
+  };
+
+  const playIdleAnimation = () => {
+    const action = mixer.clipAction(animations.find(anim => anim.name === "idle"));
+
+    if (currentAction) {
+      currentAction.stop(); 
+    }
+
+    action.setLoop(LoopRepeat, Infinity);  
+    action.reset().play(); 
+    currentAction = action;
+  };
+
+  obj.position.set(selected.position.x, selected.position.y, selected.position.z);
+  obj.scale.set(selected.scale.x, selected.scale.y, selected.scale.z);
+  scene.add(obj);
+
+  setModelRef(obj);
+  setPlayAnimation({ playAnimationOnce, playIdleAnimation }); 
+
+  let clock = new Clock();
+
+ 
+  const render = () => {
+    requestAnimationFrame(render);
+
+    if (mixer) {
+      const delta = clock.getDelta();
+      mixer.update(delta);  
+    }
+
+    renderer.render(scene, camera);
+    gl.endFrameEXP();
+  };
+
+  render();
+
+  playIdleAnimation();
+};
+
+
 export default function HomeScreen({ navigation }) {
+  const [gl, setGL] = useState<ExpoWebGLRenderingContext | null>(null);
+  const [modelRef, setModelRef] = useState<any>(null);
+  const [playAnimation, setPlayAnimation] = useState<any>(null); 
+
+  const lastTouch = useRef<{ x: number; y: number } | null>(null);
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (e: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+      lastTouch.current = { x: gestureState.x0, y: gestureState.y0 };
+    },
+    onPanResponderMove: (e: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+      if (lastTouch.current && modelRef) {
+        const deltaX = gestureState.moveX - lastTouch.current.x;
+        const deltaY = gestureState.moveY - lastTouch.current.y;
+
+        modelRef.rotation.y += deltaX * 0.01; 
+        modelRef.rotation.x += deltaY * 0.01; 
+
+        lastTouch.current = { x: gestureState.moveX, y: gestureState.moveY };
+      }
+    },
+    onPanResponderRelease: () => {
+      lastTouch.current = null;
+    },
+  });
+
+  useEffect(() => {
+    if (gl) {
+      const selected = modelFBX.avatar;
+      onContextCreate(gl, selected, setModelRef, setPlayAnimation);
+    }
+  }, [gl]);
+
+  const handleSquattAnimation = () => {
+    if (playAnimation) {
+      playAnimation.playAnimationOnce("squatt"); 
+    }
+  };
+
   const handleButtonPress = () => {
     console.log('Bouton de cintre pressé');
   };
@@ -39,35 +177,56 @@ export default function HomeScreen({ navigation }) {
 
   };
 
+  useEffect(() => {
+    if (playAnimation) {
+      const timeout = setTimeout(() => {
+        playAnimation.playIdleAnimation(); 
+      }, 2500);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [playAnimation]);
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <Profile navigation={navigation} />
-      <BackgroundHomeScreen />
-      <Canvas style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 100]} fov={80} />
-        <ambientLight intensity={0.9} />
-        <directionalLight position={[5, 5, 5]} intensity={1} />
-        <AnimatedMesh />
-        <OrbitControls />
-      </Canvas>
-      <TouchableOpacity
-        style={styles.hangerButton}
-        onPress={handleButtonPress}
-      >
+      
+      <GLView
+        style={{ flex: 1 }}
+        onContextCreate={(gl) => setGL(gl)}
+      />
+      <TouchableOpacity style={styles.button} onPress={handleSquattAnimation}>
+        <Text style={styles.buttonText}>Play Squatt Animation</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.hangerButton} onPress={handleButtonPress}>
         <FontAwesomeIcon icon={faShirt} /> 
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.battlePass}
-        onPress={openBattlePass}
-      >
+      <TouchableOpacity style={styles.battlePass} onPress={openBattlePass}>
         <Text>Battle Pass</Text>
       </TouchableOpacity>
-      
     </View>
   );
-}
+};
+
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  button: {
+    position: "absolute",
+    bottom: 100,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#1E90FF",
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
   hangerButton: {
     position: 'absolute',
     left: '35%', // Ajuste la position horizontale

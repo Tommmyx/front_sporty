@@ -1,14 +1,14 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack'; // Import Stack Navigator
+import { createStackNavigator } from '@react-navigation/stack'; 
 import HomeScreen from './HomeScreen';
 import Communaute from './Communaute';
-import TrainingMenu from './TrainingMenu';
 import StartTraining from './StartTraining'; 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faDumbbell, faHouse, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import ExploreRoutine from './ExploreRoutine';
 import CameraScreen from './Camera';
+import TrainingScreen from './TrainingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); 
@@ -16,10 +16,11 @@ const Stack = createStackNavigator();
 function TrainingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="TrainingMenu" component={TrainingMenu} />
+
       <Stack.Screen name="StartTraining" component={StartTraining} />
       <Stack.Screen name="ExploreRoutine" component={ExploreRoutine} />
       <Stack.Screen name="CameraScreen" component={CameraScreen} />
+      <Stack.Screen name="TrainingScreen" component={TrainingScreen} />
 
     </Stack.Navigator>
   );
@@ -71,7 +72,7 @@ export default function App() {
 
         <Tab.Screen
           name="Training"
-          component={TrainingStack} // Use the TrainingStack here
+          component={TrainingStack}
           options={{ 
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
