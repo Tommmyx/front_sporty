@@ -10,6 +10,9 @@ import ExploreRoutine from './ExploreRoutine';
 import CameraScreen from './Camera';
 import TrainingScreen from './TrainingScreen';
 import { SafeAreaView } from 'react-native';
+import LoginScreen from './LoginScreen';
+import CreateProfil from './CreateProfil';
+import SignupScreen from './SignupScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); 
@@ -23,6 +26,17 @@ function TrainingStack() {
       <Stack.Screen name="CameraScreen" component={CameraScreen} />
       <Stack.Screen name="TrainingScreen" component={TrainingScreen} />
 
+    </Stack.Navigator>
+  );
+}
+
+function HomeStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="CreateProfil" component={CreateProfil} />
+      <Stack.Screen name="SignupScreen" component={SignupScreen} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
     </Stack.Navigator>
   );
 }
@@ -46,7 +60,6 @@ export default function App() {
             //paddingBottom: 20, // Ajuste pour l'encoche (Safe Area)
             shadowColor: '#000',
             elevation: 10, // Ombre pour Android
-            shadowColor: '#000', // Ombre pour iOS
             shadowOpacity: 0.1,
             shadowRadius: 4,
             shadowOffset: { width: 0, height: -2 },
@@ -68,8 +81,7 @@ export default function App() {
       >
         <Tab.Screen
           name="Home"
-          component={HomeScreen}
-          
+          component={HomeStack}
           options={{ 
             headerShown: false, 
             title: 'Accueil', 

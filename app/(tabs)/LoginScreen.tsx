@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -21,7 +21,7 @@ export default function LoginScreen({ navigation }) {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
-        navigation.navigate('Home');
+        navigation.navigate('HomeScreen');
       } else {
         setErrorMessage('Identifiant ou mot de passe incorrect.');
       }
@@ -32,15 +32,13 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-gray-100">
-      <View className="flex-1 justify-center items-center px-4 sm:px-6 py-6">
-        <Text className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center">
-          Connectez-vous
-        </Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.innerContainer}>
+        <Text style={styles.title}>Connectez-vous</Text>
 
         <TextInput
           placeholder="Adresse email ou identifiant"
-          className="w-[90%] max-w-sm bg-white px-4 py-3 rounded-lg mb-3 sm:mb-4 border border-gray-300 shadow-sm"
+          style={styles.input}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -49,51 +47,130 @@ export default function LoginScreen({ navigation }) {
 
         <TextInput
           placeholder="Mot de passe"
-          className="w-[90%] max-w-sm bg-white px-4 py-3 rounded-lg mb-3 sm:mb-4 border border-gray-300 shadow-sm"
+          style={styles.input}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
 
         {errorMessage ? (
-          <Text className="text-red-500 text-sm sm:text-base text-center mb-3 sm:mb-4">
-            {errorMessage}
-          </Text>
+          <Text style={styles.errorMessage}>{errorMessage}</Text>
         ) : null}
 
-        <TouchableOpacity
-          className="w-[90%] max-w-sm bg-[#FF9119] hover:bg-[#FF9119]/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-full text-center py-3 mb-3 sm:mb-4 shadow-md"
-          onPress={handleLogin}
-        >
-          <Text className="text-white text-base sm:text-lg text-center font-semibold">
-            Je me connecte
-          </Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Je me connecte</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          className="w-[90%] max-w-sm bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-center py-3 mb-3 shadow-md"
-          onPress={() => console.log('Connexion avec Google')}
-        >
-          <Text className="text-white text-base sm:text-lg text-center font-semibold">
-            Se connecter avec Google
-          </Text>
+        <TouchableOpacity style={styles.googleButton} onPress={() => console.log('Connexion avec Google')}>
+          <Text style={styles.buttonText}>Se connecter avec Google</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          className="w-[90%] max-w-sm bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-500 font-medium rounded-full text-center py-3 mb-4 shadow-md"
-          onPress={() => console.log('Connexion avec Facebook')}
-        >
-          <Text className="text-white text-base sm:text-lg text-center font-semibold">
-            Se connecter avec Facebook
-          </Text>
+        <TouchableOpacity style={styles.facebookButton} onPress={() => console.log('Connexion avec Facebook')}>
+          <Text style={styles.buttonText}>Se connecter avec Facebook</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Test')}>
-          <Text className="text-gray-500 text-sm sm:text-base italic underline text-center">
-            Pas de compte ? Je m'inscris !
-          </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
+          <Text style={styles.signupText}>Pas de compte ? Je m'inscris !</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#f3f4f6',
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    textAlign: 'center',
+    color: '#000',
+  },
+  input: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  errorMessage: {
+    color: '#ef4444',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  loginButton: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: '#FF9119',
+    borderRadius: 24,
+    paddingVertical: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    alignItems: 'center',
+  },
+  googleButton: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: '#1D4ED8',
+    borderRadius: 24,
+    paddingVertical: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    alignItems: 'center',
+  },
+  facebookButton: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: '#1E40AF',
+    borderRadius: 24,
+    paddingVertical: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  signupText: {
+    color: '#6b7280',
+    fontSize: 14,
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+  },
+});
