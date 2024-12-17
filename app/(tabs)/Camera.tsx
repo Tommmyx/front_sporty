@@ -146,7 +146,7 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   message: {
     textAlign: 'center',
@@ -154,6 +154,8 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+    maxHeight: 300,
+    borderRadius: 10,
   },
   buttonContainer: {
     flex: 1,
