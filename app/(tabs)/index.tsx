@@ -9,6 +9,7 @@ import { faDumbbell, faHouse, faGlobe } from '@fortawesome/free-solid-svg-icons'
 import ExploreRoutine from './ExploreRoutine';
 import CameraScreen from './Camera';
 import TrainingScreen from './TrainingScreen';
+import { SafeAreaView } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); 
@@ -28,32 +29,41 @@ function TrainingStack() {
 
 export default function App() {
   return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
           tabBarStyle: {
-            width: '90%',
-            left: '5%',
-            borderRadius: 15,
-            backgroundColor: '#6200ea',
+            position: 'absolute', // Pour garantir qu'elle reste fixe au bas
+            bottom: 0, // Coller la barre en bas de l'écran
+            left: 0, // Étendre sur tout l'écran horizontalement
+            right: 0,
+            backgroundColor: '#ffffff', // Fond blanc
+            borderTopWidth: 0.5, // Fine bordure en haut
+            borderTopColor: '#d1d1d1', // Gris clair pour la bordure
             height: 60,
-            position: 'absolute',
-            bottom: 10,
+            //paddingBottom: 20, // Ajuste pour l'encoche (Safe Area)
             shadowColor: '#000',
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
-            shadowOffset: { width: 0, height: 3 },
+            elevation: 10, // Ombre pour Android
+            shadowColor: '#000', // Ombre pour iOS
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            shadowOffset: { width: 0, height: -2 },
+            paddingBottom: 0,
             
           },
           tabBarLabelStyle: {
-            fontSize: 14,
+            fontSize: 12,
+            marginBottom: 4,
+            marginTop: 0, // Aucun décalage supplémentaire
+            
           },
-          tabBarItemStyle: {
-            padding: 10,
-          },
-          tabBarActiveTintColor: '#ffeb3b',
-          tabBarInactiveTintColor: '#ffffff',
+          tabBarIconStyle: {
+            marginTop: 4, // Ajuste l'espacement de l'icône vers le bas
+        },
+          tabBarActiveTintColor: '#000000', // Couleur noire pour l'icône active
+          tabBarInactiveTintColor: '#808080',
         }}
       >
         <Tab.Screen
@@ -94,5 +104,6 @@ export default function App() {
         />
       </Tab.Navigator>
     </NavigationContainer>
+    </SafeAreaView>
   );
 }
