@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Image,
 } from 'react-native';
+import CameraScreen from './Camera';
 
 export default function TrainingScreen({ route, navigation }) {
     const { routine } = route.params;
@@ -139,15 +140,9 @@ export default function TrainingScreen({ route, navigation }) {
                     </Text>
                 </View>
             ) : (
-                <>
-                    <View style={styles.visualContainer}>
-                        <Image
-                            source={{ uri: currentExercise.image || 'https://via.placeholder.com/300' }}
-                            style={styles.visual}
-                        />
-                    </View>
-
-                    <View style={styles.infoContainer}>
+                <>  <CameraScreen />
+                    
+                    <View style={[styles.infoContainer, styles.upper]}>
                         <Text style={styles.exerciseName}>{currentExercise.name}</Text>
                         <Text style={styles.exerciseTimer}>
                             Timer : {Math.floor(exerciseTime / 60)}:{(exerciseTime % 60).toString().padStart(2, '0')}
@@ -158,12 +153,12 @@ export default function TrainingScreen({ route, navigation }) {
             )}
 
             {nextExercise && (
-                <Text style={styles.nextExerciseText}>
+                <Text style={[styles.nextExerciseText , styles.upper]}>
                     Prochain exercice : {nextExercise.name}
                 </Text>
             )}
 
-            <View style={styles.pauseAndAddTime}>
+            <View style={[styles.pauseAndAddTime , styles.upper]}>
                 <TouchableOpacity style={styles.pauseButton} onPress={togglePause}>
                     <Text style={styles.pauseButtonText}>{isPaused ? 'Reprendre' : 'Pause'}</Text>
                 </TouchableOpacity>
@@ -174,7 +169,7 @@ export default function TrainingScreen({ route, navigation }) {
                 )}
             </View>
 
-            <View style={styles.navigationButtons}>
+            <View style={[styles.navigationButtons , styles.upper]}>
                 <TouchableOpacity
                     style={[styles.navButton, styles.previousButton]}
                     onPress={handlePreviousExercise}
@@ -223,12 +218,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 20,
     },
-    visual: {
-        width: 300,
-        height: 200,
-        borderRadius: 10,
-        backgroundColor: '#dcdcdc',
+    upper: {
+        bottom: 60,
     },
+   
     infoContainer: {
         alignItems: 'center',
         marginVertical: 10,
