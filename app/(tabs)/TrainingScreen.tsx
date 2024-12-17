@@ -14,53 +14,110 @@ export default function TrainingScreen({ route, navigation }) {
     const [globalTime, setGlobalTime] = useState(0); // Timer global
     const [exerciseTime, setExerciseTime] = useState(0); // Timer pour chaque exercice
     const [isPaused, setIsPaused] = useState(false);
+    const [isResting, setIsResting] = useState(false); // Indique si on est en pause
+    const [restTime, setRestTime] = useState(0); // Timer de pause
     const [repetitions, setRepetitions] = useState(0);
 
     const currentExercise = routine.exercises[currentExerciseIndex];
+    const nextExercise =
+        currentExerciseIndex < routine.exercises.length - 1
+            ? routine.exercises[currentExerciseIndex + 1]
+            : null;
 
-
+    // Timer global
     useEffect(() => {
         let timer;
-        if (!isPaused) {
+        if (!isPaused && !isResting) {
             timer = setInterval(() => {
                 setGlobalTime((prev) => prev + 1);
             }, 1000);
         }
         return () => clearInterval(timer);
-    }, [isPaused]);
+    }, [isPaused, isResting]);
 
-
+    // Timer pour l'exercice courant
     useEffect(() => {
         let exerciseTimer;
-        if (!isPaused) {
+        if (!isPaused && !isResting && currentExercise) {
             exerciseTimer = setInterval(() => {
-                setExerciseTime((prev) => prev + 1);
+                setExerciseTime((prev) => {
+                    if (prev > 0) {
+                        return prev - 1;
+                    } else {
+                        clearInterval(exerciseTimer);
+                        startRest(); // Lance la pause
+                        return 0;
+                    }
+                });
             }, 1000);
         }
         return () => clearInterval(exerciseTimer);
-    }, [isPaused, currentExerciseIndex]);
+    }, [isPaused, isResting, currentExerciseIndex]);
+
+    // Timer pour la pause
+    useEffect(() => {
+        let restTimer;
+        if (isResting && !isPaused) {
+            restTimer = setInterval(() => {
+                setRestTime((prev) => {
+                    if (prev > 0) {
+                        return prev - 1;
+                    } else {
+                        clearInterval(restTimer);
+                        handleNextExercise(); // Passe automatiquement à l'exercice suivant
+                        return 0;
+                    }
+                });
+            }, 1000);
+        }
+        return () => clearInterval(restTimer);
+    }, [isResting, isPaused]);
+
+    // Initialiser le timer avec la durée de l'exercice courant
+    useEffect(() => {
+        if (currentExercise) {
+            setExerciseTime(Number(currentExercise.time)); // Initialise le timer
+        }
+    }, [currentExerciseIndex]);
+
+    const startRest = () => {
+        setIsResting(true);
+        setRestTime(Number(currentExercise.rest)); // Initialise le timer de pause
+    };
 
     const handleNextExercise = () => {
         if (currentExerciseIndex < routine.exercises.length - 1) {
             setCurrentExerciseIndex((prev) => prev + 1);
-            setExerciseTime(0); 
-            setRepetitions(0); 
+            setExerciseTime(Number(routine.exercises[currentExerciseIndex + 1].time)); // Durée du prochain exercice
+            setIsResting(false);
+            setRepetitions(0);
         } else {
             alert('Entraînement terminé !');
-            navigation.goBack();
+            navigation.navigate('StartTraining');
         }
+    };
+
+    const handleSkipRest = () => {
+        setIsResting(false);
+        handleNextExercise(); // Passe immédiatement à l'exercice suivant
     };
 
     const handlePreviousExercise = () => {
         if (currentExerciseIndex > 0) {
             setCurrentExerciseIndex((prev) => prev - 1);
-            setExerciseTime(0); 
-            setRepetitions(0); 
+            setExerciseTime(0);
+            setIsResting(false);
+            setRepetitions(0);
         }
     };
 
     const togglePause = () => {
         setIsPaused((prev) => !prev);
+    };
+
+    // Ajoute 20 secondes à la pause
+    const addRestTime = () => {
+        setRestTime((prev) => prev + 20);
     };
 
     return (
@@ -74,28 +131,49 @@ export default function TrainingScreen({ route, navigation }) {
                 </Text>
             </View>
 
- 
-            <View style={styles.visualContainer}>
-                <Image
-                    source={{ uri: currentExercise.image || 'https://via.placeholder.com/300' }}
-                    style={styles.visual}
-                />
-            </View>
+            {isResting ? (
+                <View style={styles.infoContainer}>
+                    <Text style={styles.exerciseName}>Pause</Text>
+                    <Text style={styles.exerciseTimer}>
+                        Reprise dans : {Math.floor(restTime / 60)}:{(restTime % 60).toString().padStart(2, '0')}
+                    </Text>
+                </View>
+            ) : (
+                <>
+                    <View style={styles.visualContainer}>
+                        <Image
+                            source={{ uri: currentExercise.image || 'https://via.placeholder.com/300' }}
+                            style={styles.visual}
+                        />
+                    </View>
 
-            <View style={styles.infoContainer}>
-                <Text style={styles.exerciseName}>{currentExercise.name}</Text>
-                <Text style={styles.exerciseTimer}>
-                    Timer : {Math.floor(exerciseTime / 60)}:{(exerciseTime % 60).toString().padStart(2, '0')}
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.exerciseName}>{currentExercise.name}</Text>
+                        <Text style={styles.exerciseTimer}>
+                            Timer : {Math.floor(exerciseTime / 60)}:{(exerciseTime % 60).toString().padStart(2, '0')}
+                        </Text>
+                        <Text style={styles.repetitions}>Répétitions : {repetitions}</Text>
+                    </View>
+                </>
+            )}
+
+            {nextExercise && (
+                <Text style={styles.nextExerciseText}>
+                    Prochain exercice : {nextExercise.name}
                 </Text>
-                <Text style={styles.repetitions}>Répétitions : {repetitions}</Text>
+            )}
+
+            <View style={styles.pauseAndAddTime}>
+                <TouchableOpacity style={styles.pauseButton} onPress={togglePause}>
+                    <Text style={styles.pauseButtonText}>{isPaused ? 'Reprendre' : 'Pause'}</Text>
+                </TouchableOpacity>
+                {isResting && (
+                    <TouchableOpacity style={styles.addTimeButton} onPress={addRestTime}>
+                        <Text style={styles.addTimeButtonText}>+20s</Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
-
-            <TouchableOpacity style={styles.pauseButton} onPress={togglePause}>
-                <Text style={styles.pauseButtonText}>{isPaused ? 'Reprendre' : 'Pause'}</Text>
-            </TouchableOpacity>
-
-      
             <View style={styles.navigationButtons}>
                 <TouchableOpacity
                     style={[styles.navButton, styles.previousButton]}
@@ -103,12 +181,19 @@ export default function TrainingScreen({ route, navigation }) {
                 >
                     <Text style={styles.navButtonText}>Précédent</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.navButton, styles.nextButton]}
-                    onPress={handleNextExercise}
-                >
-                    <Text style={styles.navButtonText}>Passer</Text>
-                </TouchableOpacity>
+                {isResting && (
+                    <TouchableOpacity style={styles.skipButton} onPress={handleSkipRest}>
+                        <Text style={styles.skipButtonText}>Passer la pause</Text>
+                    </TouchableOpacity>
+                )}
+                {!isResting && (
+                    <TouchableOpacity
+                        style={[styles.navButton, styles.nextButton]}
+                        onPress={handleNextExercise}
+                    >
+                        <Text style={styles.navButtonText}>Passer</Text>
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
     );
@@ -160,29 +245,55 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginTop: 10,
     },
+    nextExerciseText: {
+        fontSize: 18,
+        fontStyle: 'italic',
+        textAlign: 'center',
+        marginVertical: 20,
+    },
+    pauseAndAddTime: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: 10,
+    },
     pauseButton: {
         backgroundColor: '#28a745',
         padding: 15,
-        marginHorizontal: 50,
         borderRadius: 10,
         alignItems: 'center',
+        justifyContent: 'center',
+        flex: 3,
+        marginHorizontal: 5,
     },
     pauseButtonText: {
         fontSize: 18,
         color: '#fff',
         fontWeight: 'bold',
     },
+    addTimeButton: {
+        backgroundColor: '#17a2b8',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        flex: 1,
+        marginHorizontal: 5,
+    },
+    addTimeButtonText: {
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
     navigationButtons: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 30,
+        justifyContent: 'space-evenly',
+        marginTop: 20,
     },
     navButton: {
-        flex: 1,
         padding: 15,
-        marginHorizontal: 10,
         borderRadius: 8,
         alignItems: 'center',
+        flex: 1,
+        marginHorizontal: 5,
     },
     previousButton: {
         backgroundColor: '#6c757d',
@@ -191,6 +302,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#007bff',
     },
     navButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    skipButton: {
+        backgroundColor: '#007bff',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        flex: 1,
+        marginHorizontal: 5,
+    },
+    skipButtonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
