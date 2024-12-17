@@ -7,6 +7,8 @@ import {
     Image,
 } from 'react-native';
 import CameraScreen from './Camera';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faVideoCamera, faX } from '@fortawesome/free-solid-svg-icons';
 
 export default function TrainingScreen({ route, navigation }) {
     const { routine } = route.params;
@@ -18,6 +20,7 @@ export default function TrainingScreen({ route, navigation }) {
     const [isResting, setIsResting] = useState(false); // Indique si on est en pause
     const [restTime, setRestTime] = useState(0); // Timer de pause
     const [repetitions, setRepetitions] = useState(0);
+    const [cameraUsed, enableCamera] = useState(false);
 
     const currentExercise = routine.exercises[currentExerciseIndex];
     const nextExercise =
@@ -116,6 +119,10 @@ export default function TrainingScreen({ route, navigation }) {
         setIsPaused((prev) => !prev);
     };
 
+    const activateCamera = () => {
+        enableCamera((prev) => !prev);
+    }
+
     // Ajoute 20 secondes à la pause
     const addRestTime = () => {
         setRestTime((prev) => prev + 20);
@@ -130,6 +137,11 @@ export default function TrainingScreen({ route, navigation }) {
                 <Text style={styles.globalTimer}>
                     Temps total : {Math.floor(globalTime / 60)}:{(globalTime % 60).toString().padStart(2, '0')}
                 </Text>
+                {!isResting && (
+                    <TouchableOpacity onPress={activateCamera}>
+                    <FontAwesomeIcon icon={cameraUsed ?  faX : faVideoCamera} /> 
+                    </TouchableOpacity>
+                )}
             </View>
 
             {isResting ? (
@@ -140,7 +152,18 @@ export default function TrainingScreen({ route, navigation }) {
                     </Text>
                 </View>
             ) : (
-                <>  <CameraScreen />
+                <>  
+                {cameraUsed ? (
+                    <CameraScreen />
+                ) : (
+                    <View style={styles.visualContainer}>
+                        <Image
+                            source={{ uri: currentExercise.image || 'https://via.placeholder.com/300' }}
+                            style={styles.visual}
+                        />
+                    </View>
+                )
+                }
                     
                     <View style={[styles.infoContainer, styles.upper]}>
                         <Text style={styles.exerciseName}>{currentExercise.name}</Text>
@@ -157,6 +180,7 @@ export default function TrainingScreen({ route, navigation }) {
                     Prochain exercice : {nextExercise.name}
                 </Text>
             )}
+            
 
             <View style={[styles.pauseAndAddTime , styles.upper]}>
                 <TouchableOpacity style={styles.pauseButton} onPress={togglePause}>
@@ -182,12 +206,14 @@ export default function TrainingScreen({ route, navigation }) {
                     </TouchableOpacity>
                 )}
                 {!isResting && (
-                    <TouchableOpacity
-                        style={[styles.navButton, styles.nextButton]}
-                        onPress={handleNextExercise}
-                    >
-                        <Text style={styles.navButtonText}>Passer</Text>
-                    </TouchableOpacity>
+                    <View>
+                        <TouchableOpacity
+                            style={[styles.navButton, styles.nextButton]}
+                            onPress={handleNextExercise}
+                        >
+                            <Text style={styles.navButtonText}>Passer</Text>
+                        </TouchableOpacity>
+                    </View>
                 )}
             </View>
         </View>
@@ -219,7 +245,13 @@ const styles = StyleSheet.create({
         marginVertical: 20,
     },
     upper: {
-        bottom: 60,
+        //bottom: 60,
+    },
+    visual: {
+        width: 300,
+        height: 200,
+        borderRadius: 10,
+        backgroundColor: '#dcdcdc',
     },
    
     infoContainer: {

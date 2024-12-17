@@ -53,7 +53,7 @@ export default function ProfileIcon({ navigation }) {
     return (
         <View style={{ position: 'absolute', top: 40, right: 20 }}>
             {/* Image de base */}
-            <TouchableOpacity onPress={openProfile}>
+            <TouchableOpacity onPress={openProfile} style={{zIndex: 10}}>
                 <Image
                     source={selectedIcon}
                     style={{ width: 50, height: 50, borderRadius: 30, backgroundColor: 'white' }}
