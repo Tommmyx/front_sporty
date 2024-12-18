@@ -175,6 +175,17 @@ export default function HomeScreen({ navigation }) {
         shadowRadius: 4,
         shadowOffset: { width: 0, height: -2 },
       },
+      tabBarLabelStyle: {
+        fontSize: 11,
+        marginBottom: 4,
+        marginTop: 0, // Aucun décalage supplémentaire
+        
+      },
+      tabBarIconStyle: {
+        marginTop: 4, // Ajuste l'espacement de l'icône vers le bas
+    },
+      tabBarActiveTintColor: '#000000', // Couleur noire pour l'icône active
+      tabBarInactiveTintColor: '#808080',
     });
   }, [navigation]);
 
