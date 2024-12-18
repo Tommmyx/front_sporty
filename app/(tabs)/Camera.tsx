@@ -142,7 +142,7 @@ export default function CameraScreen() {
           <View style={styles.counterContainer}>
             <Text style={styles.counterText}>Biceps Count: {bicepsCount}</Text>
           </View>
-          <View style={styles.counterContainer}>
+          <View style={styles.counterContainerSquat}>
             <Text style={styles.counterText}>Squats Count: {squatCount}</Text>
           </View>
         </CameraView>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
   counterContainer: {
     position: 'absolute',
@@ -187,6 +187,11 @@ const styles = StyleSheet.create({
   counterText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
+  },
+  counterContainerSquat: {
+    position: 'absolute',
+    bottom: 5,
+    alignSelf: 'center',
   },
 });
