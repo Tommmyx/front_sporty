@@ -5,7 +5,7 @@ import HomeScreen from './HomeScreen';
 import Communaute from './Communaute';
 import StartTraining from './StartTraining'; 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faDumbbell, faHouse, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faDumbbell, faHouse, faGlobe, faStore, faRobot } from '@fortawesome/free-solid-svg-icons';
 import ExploreRoutine from './ExploreRoutine';
 import CameraScreen from './Camera';
 import TrainingScreen from './TrainingScreen';
@@ -13,7 +13,10 @@ import { SafeAreaView } from 'react-native';
 import LoginScreen from './LoginScreen';
 import CreateProfil from './CreateProfil';
 import SignupScreen from './SignupScreen';
+
 import FriendChatPage from '@/components/FriendChat';
+import Boutique from './Store';
+import Chatbot from './Chatbot'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); 
@@ -77,7 +80,7 @@ export default function App() {
             
           },
           tabBarLabelStyle: {
-            fontSize: 12,
+            fontSize: 11,
             marginBottom: 4,
             marginTop: 0, // Aucun décalage supplémentaire
             
@@ -103,7 +106,19 @@ export default function App() {
         />
 
         <Tab.Screen
-          name="Training"
+            name="Boutique"
+            component={Boutique}
+            options={{
+              headerShown: false,
+              title: 'Boutique',
+              tabBarIcon: ({ color, size }) => (
+                <FontAwesomeIcon icon={faStore} color={color} size={size || 24} />
+              ),
+            }}
+            />
+
+          <Tab.Screen
+          name="Entraînement"
           component={TrainingStack}
           options={{ 
             headerShown: false,
@@ -123,7 +138,21 @@ export default function App() {
               <FontAwesomeIcon icon={faGlobe} color={color} size={size || 24} />
             ),
           }}
-        />
+          />
+    
+
+          <Tab.Screen
+            name="Chatbot"
+            component={Chatbot}
+            options={{
+              headerShown: false,
+              title: 'IA',
+              tabBarIcon: ({ color, size }) => (
+                <FontAwesomeIcon icon={faRobot} color={color} size={size || 24} />
+              ),
+            }}
+          />
+        
       </Tab.Navigator>
     </NavigationContainer>
     </SafeAreaView>
