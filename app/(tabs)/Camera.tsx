@@ -12,6 +12,7 @@ export default function CameraScreen() {
   const intervalRef = useRef(null);
   const isFocused = useIsFocused();
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [squatCount, setSquatCount] = useState(0);
   const [bicepsCount, setBicepsCount] = useState(0);
 
   const socket = useRef(null);
@@ -32,6 +33,11 @@ export default function CameraScreen() {
     socket.current.on('biceps_update', (data) => {
       console.log('Biceps Update:', data);
       setBicepsCount(data.nbr_curl_biceps_done);
+    });
+
+    socket.current.on('squat_update', (data) => {
+      console.log('Squat Update:', data);
+      setSquatCount(data.nbr_curl_squat_done);
     });
 
     return () => {
@@ -135,6 +141,9 @@ export default function CameraScreen() {
           </View>
           <View style={styles.counterContainer}>
             <Text style={styles.counterText}>Biceps Count: {bicepsCount}</Text>
+          </View>
+          <View style={styles.counterContainer}>
+            <Text style={styles.counterText}>Squats Count: {squatCount}</Text>
           </View>
         </CameraView>
       )}
