@@ -124,7 +124,7 @@ const onContextCreate = async (gl: any, selected: any, setModelRef: any, setPlay
 
   render();
 
-  playIdleAnimation();
+  playIdleAnimation(); 
 };
 
 
@@ -156,6 +156,27 @@ export default function HomeScreen({ navigation }) {
       lastTouch.current = null;
     },
   });
+
+  useEffect(() => {
+    // Réafficher la barre du bas
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#ffffff',
+        borderTopWidth: 0.5,
+        borderTopColor: '#d1d1d1',
+        height: 60,
+        shadowColor: '#000',
+        elevation: 10,
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: -2 },
+      },
+    });
+  }, [navigation]);
 
   useEffect(() => {
     if (gl) {

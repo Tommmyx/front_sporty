@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
 
 export default function SignupScreen({ navigation }) {
@@ -7,7 +7,32 @@ export default function SignupScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  
+  useEffect(() => {
+    // Cacher la barre du bas
+    navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
 
+    // Réafficher la barre du bas quand on quitte cet écran
+    return () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#ffffff',
+          borderTopWidth: 0.5,
+          borderTopColor: '#d1d1d1',
+          height: 60,
+          shadowColor: '#000',
+          elevation: 10,
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          shadowOffset: { width: 0, height: -2 },
+        },
+      });
+    };
+  }, [navigation]);
   const handleSignup = () => {
     setErrorMessage('');
 

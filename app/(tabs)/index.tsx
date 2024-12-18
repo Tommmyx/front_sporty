@@ -91,6 +91,7 @@ export default function App() {
           tabBarActiveTintColor: '#000000', // Couleur noire pour l'icône active
           tabBarInactiveTintColor: '#808080',
         }}
+        
       >
         <Tab.Screen
           name="Home"
@@ -137,6 +138,7 @@ export default function App() {
             tabBarIcon: ({ color, size }) => (
               <FontAwesomeIcon icon={faGlobe} color={color} size={size || 24} />
             ),
+            
           }}
           />
     

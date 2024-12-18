@@ -27,7 +27,28 @@ export default function TrainingScreen({ route, navigation }) {
         currentExerciseIndex < routine.exercises.length - 1
             ? routine.exercises[currentExerciseIndex + 1]
             : null;
-
+    useEffect(() => {
+        navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+        return () => {
+            navigation.getParent()?.setOptions({
+            tabBarStyle: {
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: '#ffffff',
+                borderTopWidth: 0.5,
+                borderTopColor: '#d1d1d1',
+                height: 60,
+                shadowColor: '#000',
+                elevation: 10,
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                shadowOffset: { width: 0, height: -2 },
+            },
+            });
+        };
+    }, [navigation]);
     // Timer global
     useEffect(() => {
         let timer;
@@ -131,6 +152,9 @@ export default function TrainingScreen({ route, navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+                    <Text style={styles.backButtonText}>⟵</Text>
+                </TouchableOpacity>
                 <Text style={styles.exerciseInfo}>
                     Exercice {currentExerciseIndex + 1}/{routine.exercises.length}
                 </Text>
@@ -228,6 +252,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 20,
     },
@@ -244,8 +269,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 20,
     },
-    upper: {
-        //bottom: 60,
+    backButtonText: {
+        fontSize: 24,
+        color: '#000',
+      },
+    back: {
+        
+        marginRight: 20,
     },
     visual: {
         width: 300,

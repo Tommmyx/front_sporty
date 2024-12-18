@@ -1,10 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+      navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+  
+      return () => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: '#ffffff',
+            borderTopWidth: 0.5,
+            borderTopColor: '#d1d1d1',
+            height: 60,
+            shadowColor: '#000',
+            elevation: 10,
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            shadowOffset: { width: 0, height: -2 },
+          },
+        });
+      };
+    }, [navigation]);
 
   const handleLogin = async () => {
     setErrorMessage('');
