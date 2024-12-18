@@ -45,7 +45,7 @@ export default function CameraScreen() {
     if (permission && permission.granted) {
       intervalRef.current = setInterval(() => {
         captureFrame();
-      }, 1000); // Emit frames every 200ms
+      }, 200); // Emit frames every 200ms
     } else {
       clearInterval(intervalRef.current);
     }
