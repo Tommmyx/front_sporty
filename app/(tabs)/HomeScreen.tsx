@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faShirt } from '@fortawesome/free-solid-svg-icons';
 
 import { loadModel } from "../utils/3d";
-import Profile from "./Profile";
+import ProfileIcon from "./Profil";
 
 const modelFBX = {
   avatar: {
@@ -187,7 +187,7 @@ export default function HomeScreen({ navigation }) {
 
   const handleSquattAnimation = () => {
     if (playAnimation) {
-      playAnimation.playAnimationOnce("squatt"); 
+      playAnimation.playAnimationOnce("squat"); 
     }
   };
 
@@ -210,8 +210,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
-      <Profile navigation={navigation} />
-      
+      <ProfileIcon />      
       <GLView
         style={{ flex: 1 }}
         onContextCreate={(gl) => setGL(gl)}

@@ -17,6 +17,7 @@ import SignupScreen from './SignupScreen';
 import FriendChatPage from '@/components/FriendChat';
 import Boutique from './Store';
 import Chatbot from './Chatbot'; 
+import ProfileScreen from './ProfileScreen'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); 
@@ -41,6 +42,11 @@ function HomeStack() {
       <Stack.Screen name="CreateProfil" component={CreateProfil} />
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen 
+        name="Profil" 
+        component={ProfileScreen} 
+        options={{ headerShown: true, title: 'Mon Profil' }} 
+      />
     </Stack.Navigator>
   );
 }
