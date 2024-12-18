@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, Dimensions, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import FriendChatModal from '../../components/FriendChat';
 
 const AmisList = [
   { id: '1', name: 'Alice', avatar: 'https://via.placeholder.com/50' },
@@ -45,23 +44,19 @@ const ListeGroupes = ({ onSelect }) => (
   />
 );
 
-export default function Communaute({navigation}) {
+export default function Communaute({ navigation }) {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'amis', title: 'Amis' },
     { key: 'groupes', title: 'Groupes' },
   ]);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-
   const handleSelect = (item) => {
-    setSelectedItem(item);
-    setModalVisible(true);
+    navigation.navigate('FriendChatPage', { item }); 
   };
 
   const renderScene = SceneMap({
-    amis: () => <ListeAmis onSelect={handleSelect} />, 
+    amis: () => <ListeAmis onSelect={handleSelect} />,
     groupes: () => <ListeGroupes onSelect={handleSelect} />,
   });
 
@@ -77,20 +72,10 @@ export default function Communaute({navigation}) {
             {...props}
             indicatorStyle={{ backgroundColor: '#000' }}
             style={{ backgroundColor: '#fff' }}
-            activeColor='black'
-            inactiveColor='grey'
+            activeColor="black"
+            inactiveColor="grey"
           />
         )}
-      />
-
-      <FriendChatModal
-        visible={modalVisible}
-        onClose={() => {
-          setModalVisible(false);
-          navigation.setOptions({ tabBarStyle: { display: 'block' } });
-        }}
-        item={selectedItem}
-        navigation={navigation}
       />
     </View>
   );

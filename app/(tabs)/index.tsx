@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native';
 import LoginScreen from './LoginScreen';
 import CreateProfil from './CreateProfil';
 import SignupScreen from './SignupScreen';
+import FriendChatPage from '@/components/FriendChat';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); 
@@ -37,6 +38,15 @@ function HomeStack() {
       <Stack.Screen name="CreateProfil" component={CreateProfil} />
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function CommunityStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Communaute" component={Communaute} />
+      <Stack.Screen name="FriendChatPage" component={FriendChatPage}  />
     </Stack.Navigator>
   );
 }
@@ -105,7 +115,7 @@ export default function App() {
 
         <Tab.Screen
           name="Communauté"
-          component={Communaute}
+          component={CommunityStack}
           options={{ 
             headerShown: false, 
             title: 'Communauté',
