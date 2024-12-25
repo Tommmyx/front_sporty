@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
   counterContainer: {
     position: 'absolute',
@@ -187,7 +187,12 @@ const styles = StyleSheet.create({
   counterText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
+  },
+  counterContainerSquat: {
+    position: 'absolute',
+    bottom: 5,
+    alignSelf: 'center',
   },
   counterContainerSquat: {
     position: 'absolute',
