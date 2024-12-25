@@ -37,7 +37,7 @@ export default function CameraScreen() {
 
     socket.current.on('squat_update', (data) => {
       console.log('Squat Update:', data);
-      setSquatCount(data.nbr_curl_squat_done);
+      setSquatCount(data.nbr_squat_done);
     });
 
     return () => {
@@ -142,7 +142,7 @@ export default function CameraScreen() {
           <View style={styles.counterContainer}>
             <Text style={styles.counterText}>Biceps Count: {bicepsCount}</Text>
           </View>
-          <View style={styles.counterContainer}>
+          <View style={styles.counterContainerSquat}>
             <Text style={styles.counterText}>Squats Count: {squatCount}</Text>
           </View>
         </CameraView>
@@ -188,5 +188,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+  },
+  counterContainerSquat: {
+    position: 'absolute',
+    bottom: 5,
+    alignSelf: 'center',
   },
 });
