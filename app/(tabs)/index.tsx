@@ -1,168 +1,243 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack'; 
-import HomeScreen from './HomeScreen';
-import Communaute from './Communaute';
-import StartTraining from './StartTraining'; 
+import {
+  View,
+  StyleSheet,
+  PanResponder,
+  GestureResponderEvent,
+  PanResponderGestureState,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
+import { Renderer } from "expo-three";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  AmbientLight,
+  DirectionalLight,
+  PerspectiveCamera,
+  Scene,
+  AnimationMixer,
+  Clock,
+  LoopOnce,
+  LoopRepeat,
+} from "three";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faDumbbell, faHouse, faGlobe, faStore, faRobot } from '@fortawesome/free-solid-svg-icons';
-import ExploreRoutine from './ExploreRoutine';
-import CameraScreen from './Camera';
-import TrainingScreen from './TrainingScreen';
-import { SafeAreaView } from 'react-native';
-import LoginScreen from './LoginScreen';
-import CreateProfil from './CreateProfil';
-import SignupScreen from './SignupScreen';
+import { faShirt } from '@fortawesome/free-solid-svg-icons';
 
-import FriendChatPage from '@/components/FriendChat';
-import Boutique from './Store';
-import Chatbot from './Chatbot'; 
-import ProfileScreen from './ProfileScreen'; 
+import { loadModel } from "../../utils/3d"; 
+import Profile from "../../components/Profile"; // Déplacez le fichier dans un dossier "components"
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator(); 
+import { useRouter } from 'expo-router';
 
-function TrainingStack() {
+const modelFBX = {
+  avatar: {
+    type: "fbx",
+    name: "avatar",
+    isometric: false,
+    model: require("../../assets/3D/animation.fbx"),
+    textures: [{ image: require("../../assets/3D/Image_0.jpg") }],
+    scale: {
+      x: 1,
+      y: 1,
+      z: 1,
+    },
+    position: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    animation: {
+      path: require("../../assets/3D/animation.fbx"),
+    },
+  },
+};
+
+const onContextCreate = async (gl, selected, setModelRef, setPlayAnimation) => {
+  const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
+
+  const renderer = new Renderer({ gl });
+  renderer.setSize(width, height);
+
+  const camera = new PerspectiveCamera(75, width / height, 0.1, 1500);
+  camera.position.set(0, 130, 900);
+
+  const scene = new Scene();
+
+  // Lighting setup
+  const ambientLight = new AmbientLight(0xffffff, 2);
+  scene.add(ambientLight);
+
+  const directionalLight = new DirectionalLight(0xffeedd, 1.5);
+  directionalLight.position.set(100, 300, 100);
+  directionalLight.castShadow = true;
+  scene.add(directionalLight);
+
+  // Load model and animations
+  const { obj, mixer, animations } = await loadModel(selected);
+
+  // Store the current animation
+  let currentAction = null;
+
+  // Function to play a specific animation
+  const playAnimationOnce = (animationName) => {
+    const action = mixer.clipAction(animations.find(anim => anim.name === animationName));
+
+    if (currentAction) {
+      currentAction.stop();
+    }
+
+    action.setLoop(LoopOnce, 1);
+    action.reset().play();
+    currentAction = action;
+  };
+
+  const playIdleAnimation = () => {
+    const action = mixer.clipAction(animations.find(anim => anim.name === "idle"));
+
+    if (currentAction) {
+      currentAction.stop();
+    }
+
+    action.setLoop(LoopRepeat, Infinity);
+    action.reset().play();
+    currentAction = action;
+  };
+
+  obj.position.set(selected.position.x, selected.position.y, selected.position.z);
+  obj.scale.set(selected.scale.x, selected.scale.y, selected.scale.z);
+  scene.add(obj);
+
+  setModelRef(obj);
+  setPlayAnimation({ playAnimationOnce, playIdleAnimation });
+
+  let clock = new Clock();
+
+  const render = () => {
+    requestAnimationFrame(render);
+
+    if (mixer) {
+      const delta = clock.getDelta();
+      mixer.update(delta);
+    }
+
+    renderer.render(scene, camera);
+    gl.endFrameEXP();
+  };
+
+  render();
+
+  playIdleAnimation();
+};
+
+export default function HomeScreen() {
+  const router = useRouter(); // Utilisation du routeur
+  const [gl, setGL] = useState<ExpoWebGLRenderingContext | null>(null);
+  const [modelRef, setModelRef] = useState<any>(null);
+  const [playAnimation, setPlayAnimation] = useState<any>(null);
+
+  const lastTouch = useRef<{ x: number; y: number } | null>(null);
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (e: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+      lastTouch.current = { x: gestureState.x0, y: gestureState.y0 };
+    },
+    onPanResponderMove: (e: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+      if (lastTouch.current && modelRef) {
+        const deltaX = gestureState.moveX - lastTouch.current.x;
+        const deltaY = gestureState.moveY - lastTouch.current.y;
+
+        modelRef.rotation.y += deltaX * 0.01;
+        modelRef.rotation.x += deltaY * 0.01;
+
+        lastTouch.current = { x: gestureState.moveX, y: gestureState.moveY };
+      }
+    },
+    onPanResponderRelease: () => {
+      lastTouch.current = null;
+    },
+  });
+
+  useEffect(() => {
+    if (gl) {
+      const selected = modelFBX.avatar;
+      onContextCreate(gl, selected, setModelRef, setPlayAnimation);
+    }
+  }, [gl]);
+
+  const handleSquattAnimation = () => {
+    if (playAnimation) {
+      playAnimation.playAnimationOnce("squatt");
+    }
+  };
+
+  const handleButtonPress = () => {
+    console.log('Bouton de cintre pressé');
+  };
+
+  const openBattlePass = () => {
+    router.push('/BattlePass'); 
+  };
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-
-      <Stack.Screen name="StartTraining" component={StartTraining} />
-      <Stack.Screen name="ExploreRoutine" component={ExploreRoutine} />
-      <Stack.Screen name="CameraScreen" component={CameraScreen} />
-      <Stack.Screen name="TrainingScreen" component={TrainingScreen} />
-
-    </Stack.Navigator>
-  );
-}
-
-function HomeStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="LoginScreen" component={LoginScreen} />
-      <Stack.Screen name="CreateProfil" component={CreateProfil} />
-      <Stack.Screen name="SignupScreen" component={SignupScreen} />
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen 
-        name="Profil" 
-        component={ProfileScreen} 
-        options={{ headerShown: true, title: 'Mon Profil' }} 
+    <View style={styles.container} {...panResponder.panHandlers}>
+      <Profile />
+      <GLView
+        style={{ flex: 1 }}
+        onContextCreate={(gl) => setGL(gl)}
       />
-    </Stack.Navigator>
+      <TouchableOpacity style={styles.button} onPress={handleSquattAnimation}>
+        <Text style={styles.buttonText}>Play Squatt Animation</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.hangerButton} onPress={handleButtonPress}>
+        <FontAwesomeIcon icon={faShirt} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.battlePass} onPress={openBattlePass}>
+        <Text>Battle Pass</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
-function CommunityStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Communaute" component={Communaute} />
-      <Stack.Screen name="FriendChatPage" component={FriendChatPage}  />
-    </Stack.Navigator>
-  );
-}
-
-export default function App() {
-  return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-    <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          tabBarStyle: {
-            position: 'absolute', // Pour garantir qu'elle reste fixe au bas
-            bottom: 0, // Coller la barre en bas de l'écran
-            left: 0, // Étendre sur tout l'écran horizontalement
-            right: 0,
-            backgroundColor: '#ffffff', // Fond blanc
-            borderTopWidth: 0.5, // Fine bordure en haut
-            borderTopColor: '#d1d1d1', // Gris clair pour la bordure
-            height: 60,
-            //paddingBottom: 20, // Ajuste pour l'encoche (Safe Area)
-            shadowColor: '#000',
-            elevation: 10, // Ombre pour Android
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            shadowOffset: { width: 0, height: -2 },
-            paddingBottom: 0,
-            
-          },
-          tabBarLabelStyle: {
-            fontSize: 11,
-            marginBottom: 4,
-            marginTop: 0, // Aucun décalage supplémentaire
-            
-          },
-          tabBarIconStyle: {
-            marginTop: 4, // Ajuste l'espacement de l'icône vers le bas
-        },
-          tabBarActiveTintColor: '#000000', // Couleur noire pour l'icône active
-          tabBarInactiveTintColor: '#808080',
-        }}
-        
-      >
-        <Tab.Screen
-          name="Home"
-          component={HomeStack}
-          options={{ 
-            headerShown: false, 
-            title: 'Accueil', 
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesomeIcon icon={faHouse} color={color} size={size || 24} />
-            ),
-            
-          }}
-        />
-
-        <Tab.Screen
-            name="Boutique"
-            component={Boutique}
-            options={{
-              headerShown: false,
-              title: 'Boutique',
-              tabBarIcon: ({ color, size }) => (
-                <FontAwesomeIcon icon={faStore} color={color} size={size || 24} />
-              ),
-            }}
-            />
-
-          <Tab.Screen
-          name="Entraînement"
-          component={TrainingStack}
-          options={{ 
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesomeIcon icon={faDumbbell} color={color} size={size || 24} /> 
-            ),
-          }}
-        />
-
-        <Tab.Screen
-          name="Communauté"
-          component={CommunityStack}
-          options={{ 
-            headerShown: false, 
-            title: 'Communauté',
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesomeIcon icon={faGlobe} color={color} size={size || 24} />
-            ),
-            
-          }}
-          />
-    
-
-          <Tab.Screen
-            name="Chatbot"
-            component={Chatbot}
-            options={{
-              headerShown: false,
-              title: 'IA',
-              tabBarIcon: ({ color, size }) => (
-                <FontAwesomeIcon icon={faRobot} color={color} size={size || 24} />
-              ),
-            }}
-          />
-        
-      </Tab.Navigator>
-    </NavigationContainer>
-    </SafeAreaView>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  button: {
+    position: "absolute",
+    bottom: 100,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#1E90FF",
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  hangerButton: {
+    position: 'absolute',
+    left: '35%',
+    top: '60%',
+    transform: [{ translateY: -15 }],
+    backgroundColor: 'white',
+    borderRadius: 25,
+    padding: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  battlePass: {
+    position: 'absolute',
+    right: '20%',
+    bottom: '15%',
+    transform: [{ translateY: -15 }],
+    backgroundColor: 'white',
+    padding: 10,
+    elevation: 5,
+  },
+});

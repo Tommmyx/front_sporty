@@ -13,10 +13,10 @@ import * as FileSystem from 'expo-file-system';
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faX, faPlus} from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'expo-router';
 
-
-
-export default function StartTraining({ navigation }) {
+export default function StartTraining() {
+    const router = useRouter();
     const [routines, setRoutines] = useState([]);
     const [selectedRoutine, setSelectedRoutine] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -78,11 +78,11 @@ export default function StartTraining({ navigation }) {
 
     const startActivity = () => {
         closeModal();
-        navigation.navigate('TrainingScreen', { routine: selectedRoutine });
+        router.push({ pathname: '/(tabs)/training/TrainingScreen', params: { routine: JSON.stringify(selectedRoutine) } });
     };
-
+    
     const addRoutine = () => {
-        navigation.navigate('ExploreRoutine');
+        router.push('/(tabs)/training/ExploreRoutine');
     };
 
     return (

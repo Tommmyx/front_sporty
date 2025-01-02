@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { useRouter } from 'expo-router';
+
 
 const AmisList = [
   { id: '1', name: 'Alice', avatar: 'https://via.placeholder.com/50' },
@@ -44,7 +46,8 @@ const ListeGroupes = ({ onSelect }) => (
   />
 );
 
-export default function Communaute({ navigation }) {
+export default function Communaute() {
+  const router = useRouter();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'amis', title: 'Amis' },
@@ -52,7 +55,7 @@ export default function Communaute({ navigation }) {
   ]);
 
   const handleSelect = (item) => {
-    navigation.navigate('FriendChatPage', { item }); 
+    router.push({ pathname: '/community/FriendChat', params: { item: JSON.stringify(item) } }); 
   };
 
   const renderScene = SceneMap({

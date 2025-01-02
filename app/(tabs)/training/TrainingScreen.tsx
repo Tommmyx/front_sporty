@@ -6,13 +6,16 @@ import {
     StyleSheet,
     Image,
 } from 'react-native';
-import CameraScreen from './Camera';
+import CameraScreen from '../../../components/Camera';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faVideoCamera, faX } from '@fortawesome/free-solid-svg-icons';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
-export default function TrainingScreen({ route, navigation }) {
-    const { routine } = route.params;
-
+export default function TrainingScreen() {
+    const router = useRouter();
+    const { routine } = useLocalSearchParams();
+    const parsedRoutine = routine ? JSON.parse(routine) : null;
+    
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [globalTime, setGlobalTime] = useState(0); // Timer global
     const [exerciseTime, setExerciseTime] = useState(0); // Timer pour chaque exercice
@@ -22,12 +25,12 @@ export default function TrainingScreen({ route, navigation }) {
     const [repetitions, setRepetitions] = useState(0);
     const [cameraUsed, enableCamera] = useState(false);
 
-    const currentExercise = routine.exercises[currentExerciseIndex];
+    const currentExercise = parsedRoutine.exercises[currentExerciseIndex];
     const nextExercise =
-        currentExerciseIndex < routine.exercises.length - 1
-            ? routine.exercises[currentExerciseIndex + 1]
+        currentExerciseIndex < parsedRoutine.exercises.length - 1
+            ? parsedRoutine.exercises[currentExerciseIndex + 1]
             : null;
-    useEffect(() => {
+    /*useEffect(() => {
         navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
         return () => {
             navigation.getParent()?.setOptions({
@@ -48,7 +51,7 @@ export default function TrainingScreen({ route, navigation }) {
             },
             });
         };
-    }, [navigation]);
+    }, [navigation]);*/
     // Timer global
     useEffect(() => {
         let timer;
@@ -111,14 +114,14 @@ export default function TrainingScreen({ route, navigation }) {
     };
 
     const handleNextExercise = () => {
-        if (currentExerciseIndex < routine.exercises.length - 1) {
+        if (currentExerciseIndex < parsedRoutine.exercises.length - 1) {
             setCurrentExerciseIndex((prev) => prev + 1);
-            setExerciseTime(Number(routine.exercises[currentExerciseIndex + 1].time)); // Durée du prochain exercice
+            setExerciseTime(Number(parsedRoutine.exercises[currentExerciseIndex + 1].time)); // Durée du prochain exercice
             setIsResting(false);
             setRepetitions(0);
         } else {
             alert('Entraînement terminé !');
-            navigation.navigate('StartTraining');
+            router.push('/(tabs)/training');
         }
     };
 
@@ -152,11 +155,11 @@ export default function TrainingScreen({ route, navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.back} onPress={() => router.back()}>
                     <Text style={styles.backButtonText}>⟵</Text>
                 </TouchableOpacity>
                 <Text style={styles.exerciseInfo}>
-                    Exercice {currentExerciseIndex + 1}/{routine.exercises.length}
+                    Exercice {currentExerciseIndex + 1}/{parsedRoutine.exercises.length}
                 </Text>
                 <Text style={styles.globalTimer}>
                     Temps total : {Math.floor(globalTime / 60)}:{(globalTime % 60).toString().padStart(2, '0')}

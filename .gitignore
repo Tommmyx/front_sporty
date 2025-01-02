@@ -167,6 +167,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+/ios
+/android
+
 ### ReactNative.Android Stack ###
 # Gradle files
 .gradle/

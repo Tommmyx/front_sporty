@@ -6,7 +6,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCrown, faXmark } from '@fortawesome/free-solid-svg-icons';
 
-export default function ProfileIcon({ navigation }) {
+export default function ProfileIcon() {
     // Responsive design test
     const { height, width } = Dimensions.get('window');
     const actualDimensions = {
@@ -16,14 +16,14 @@ export default function ProfileIcon({ navigation }) {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [iconSelectionVisible, setIconSelectionVisible] = useState(false);
-    const [selectedIcon, setSelectedIcon] = useState(require('../../assets/images/profile_icons/woman.png'));
+    const [selectedIcon, setSelectedIcon] = useState(require('../assets/images/profile_icons/woman.png'));
     const [userData, setUserData] = useState(null);
     const isFocused = useIsFocused(); // Détecte si l'écran est en focus
 
     const iconLibrary = [
-        require('../../assets/images/profile_icons/woman.png'),
-        require('../../assets/images/profile_icons/man.png'),
-        require('../../assets/images/profile_icons/totoro.png'),
+        require('../assets/images/profile_icons/woman.png'),
+        require('../assets/images/profile_icons/man.png'),
+        require('../assets/images/profile_icons/totoro.png'),
     ];
 
     const loadData = async () => {

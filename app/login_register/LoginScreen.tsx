@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
+  /*useEffect(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
   
       return () => {
@@ -28,7 +30,7 @@ export default function LoginScreen({ navigation }) {
           },
         });
       };
-    }, [navigation]);
+    }, [navigation]);*/
 
   const handleLogin = async () => {
     setErrorMessage('');
@@ -45,7 +47,7 @@ export default function LoginScreen({ navigation }) {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
-        navigation.navigate('HomeScreen');
+        router.push('/');
       } else {
         setErrorMessage('Identifiant ou mot de passe incorrect.');
       }
@@ -93,7 +95,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.buttonText}>Se connecter avec Facebook</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
+        <TouchableOpacity onPress={() => router.push('/login_register/SignupScreen') }>
           <Text style={styles.signupText}>Pas de compte ? Je m'inscris !</Text>
         </TouchableOpacity>
       </View>

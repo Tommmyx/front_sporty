@@ -13,8 +13,10 @@ import {
 import * as FileSystem from 'expo-file-system';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'expo-router';
 
-export default function ExploreRoutine({ navigation }) {
+export default function ExploreRoutine() {
+    const router = useRouter();
     const [sessionName, setSessionName] = useState('');
     const [description, setDescription] = useState('');
     const [exercises, setExercises] = useState([]);
@@ -60,7 +62,7 @@ export default function ExploreRoutine({ navigation }) {
         setSessionName('');
         setDescription('');
         setExercises([]);
-        navigation.navigate('StartTraining');
+        router.push('/(tabs)/training');
     };
 
     return (

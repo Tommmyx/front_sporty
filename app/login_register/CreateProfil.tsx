@@ -5,8 +5,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
+import { useRouter } from 'expo-router';
 
-export default function CreateProfil({ navigation }) {
+
+export default function CreateProfil() {
+    const router = useRouter();
+    
     const { width, height } = Dimensions.get('window');
     const circleSize = Math.min(width, height) * 0.3;
 
@@ -43,7 +47,7 @@ export default function CreateProfil({ navigation }) {
     const saveData = async () => {
         try {
             await AsyncStorage.setItem('userProfile', JSON.stringify(userData));
-            navigation.navigate('HomeScreen');
+            router.push('/');
         } catch (error) {
             console.error('Failed to save data', error);
         }

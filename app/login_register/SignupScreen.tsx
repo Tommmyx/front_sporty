@@ -1,14 +1,17 @@
 import { useState, useEffect} from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 
-export default function SignupScreen({ navigation }) {
+
+export default function SignupScreen() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
-  useEffect(() => {
+  /*useEffect(() => {
     // Cacher la barre du bas
     navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
 
@@ -32,7 +35,7 @@ export default function SignupScreen({ navigation }) {
         },
       });
     };
-  }, [navigation]);
+  }, [navigation]);*/
   const handleSignup = () => {
     setErrorMessage('');
 
@@ -47,7 +50,7 @@ export default function SignupScreen({ navigation }) {
     }
 
     console.log('Signup successful:', { email, password });
-    navigation.navigate('CreateProfil');
+    router.push('/login_register/CreateProfil');
   };
 
   return (
