@@ -33,7 +33,7 @@ const modelFBX = {
     type: "fbx",
     name: "avatar",
     isometric: false,
-    model: require("../../assets/3D/animation.fbx"),
+    model: require("../../assets/3D/animationFbx.fbx"),
     textures: [{ image: require("../../assets/3D/Image_0.jpg") }],
     scale: {
       x: 1,
@@ -57,7 +57,7 @@ const onContextCreate = async (gl, selected, setModelRef, setPlayAnimation) => {
   const renderer = new Renderer({ gl });
   renderer.setSize(width, height);
 
-  const camera = new PerspectiveCamera(75, width / height, 0.1, 1500);
+  const camera = new PerspectiveCamera(75, width / height, 1, 1500);
   camera.position.set(0, 130, 900);
 
   const scene = new Scene();
@@ -176,7 +176,7 @@ export default function HomeScreen() {
   };
 
   const openBattlePass = () => {
-    router.push('/BattlePass'); 
+    router.push('../../components/BattlePass'); 
   };
 
   return (
@@ -184,7 +184,7 @@ export default function HomeScreen() {
       <Profile />
       <GLView
         style={{ flex: 1 }}
-        onContextCreate={(gl) => setGL(gl)}
+        onContextCreate={(gl) => /*setGL(gl)*/ console.log('created')}
       />
       <TouchableOpacity style={styles.button} onPress={handleSquattAnimation}>
         <Text style={styles.buttonText}>Play Squatt Animation</Text>
