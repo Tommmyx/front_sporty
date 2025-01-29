@@ -1,10 +1,35 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import battlepassImage from '../../assets/images/shop/battlepass.webp';
-
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+  Alert,
+} from 'react-native';
+import battlepassImage from '../../../assets/images/shop/battlepass.webp';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const Boutique = () => {
-  const availableEclairs = 1500; // Nombre d'éclairs disponibles
+  const router = useRouter();
+  const { updatedSportyx = 0 } = useLocalSearchParams(); 
+  const [sportyx, setSportyx] = useState(Number(updatedSportyx)); 
+
+  const handleNavigateToSportyxSeller = () => {
+    router.push('/(tabs)/shop/sportyxSeller'); 
+  };
+
+  const handlePurchase = (itemName, price) => {
+    if (sportyx >= price) {
+      setSportyx((prev) => prev - price);
+      Alert.alert('Achat réussi', `Vous avez acheté ${itemName} pour ${price} Sportyx ⚡ !`);
+    } else {
+      Alert.alert('Achat impossible', "Vous n'avez pas assez de Sportyx ⚡ !");
+    }
+  };
 
   // Articles par rubrique
   const items = {
@@ -13,39 +38,36 @@ const Boutique = () => {
         { id: 1, name: 'T-Shirt', price: 100, image: 'https://via.placeholder.com/100' },
         { id: 2, name: 'Chemise', price: 150, image: 'https://via.placeholder.com/100' },
         { id: 3, name: 'Pull', price: 200, image: 'https://via.placeholder.com/100' },
+        { id: 4, name: 'Hoodie', price: 250, image: 'https://via.placeholder.com/100' },
       ],
       Pantalons: [
-        { id: 1, name: 'Jean', price: 200, image: 'https://via.placeholder.com/100' },
-        { id: 2, name: 'Jogging', price: 120, image: 'https://via.placeholder.com/100' },
+        { id: 5, name: 'Jean', price: 200, image: 'https://via.placeholder.com/100' },
+        { id: 6, name: 'Jogging', price: 120, image: 'https://via.placeholder.com/100' },
       ],
       Chaussures: [
-        { id: 1, name: 'Baskets', price: 250, image: 'https://via.placeholder.com/100' },
-        { id: 2, name: 'Bottes', price: 300, image: 'https://via.placeholder.com/100' },
-        { id: 3, name: 'Sandales', price: 100, image: 'https://via.placeholder.com/100' },
+        { id: 7, name: 'Baskets', price: 250, image: 'https://via.placeholder.com/100' },
+        { id: 8, name: 'Bottes', price: 300, image: 'https://via.placeholder.com/100' },
+        { id: 9, name: 'Sandales', price: 100, image: 'https://via.placeholder.com/100' },
       ],
       Accessoires: [
-        { id: 1, name: 'Casquette', price: 50, image: 'https://via.placeholder.com/100' },
-        { id: 2, name: 'Montre', price: 400, image: 'https://via.placeholder.com/100' },
+        { id: 10, name: 'Casquette', price: 50, image: 'https://via.placeholder.com/100' },
+        { id: 11, name: 'Montre', price: 400, image: 'https://via.placeholder.com/100' },
       ],
     },
     Coffres: [
-      { id: 1, name: 'Petit Coffre', price: 50, image: 'https://via.placeholder.com/100' },
-      { id: 2, name: 'Grand Coffre', price: 150, image: 'https://via.placeholder.com/100' },
+      { id: 12, name: 'Petit Coffre', price: 50, image: 'https://via.placeholder.com/100' },
+      { id: 13, name: 'Grand Coffre', price: 150, image: 'https://via.placeholder.com/100' },
     ],
   };
 
-  const handlePurchase = (itemName, price) => {
-    alert(`Vous avez acheté ${itemName} pour ${price} éclairs !`);
-  };
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Header avec titre et compteur d'éclairs */}
+    <ScrollView contentContainerStyle={styles.container}  showsVerticalScrollIndicator={false}>
+      {/* Header avec titre et compteur de Sportyx */}
       <View style={styles.header}>
         <Text style={styles.title}>Boutique</Text>
-        <View style={styles.eclairsContainer}>
-          <Text style={styles.eclairsText}>⚡ {availableEclairs}</Text>
-          <TouchableOpacity style={styles.buyButton}>
+        <View style={styles.sportyxContainer}>
+          <Text style={styles.sportyxText}>⚡ {sportyx}</Text>
+          <TouchableOpacity style={styles.buyButton} onPress={handleNavigateToSportyxSeller}>
             <Text style={styles.buyButtonText}>+</Text>
           </TouchableOpacity>
         </View>
@@ -53,10 +75,7 @@ const Boutique = () => {
 
       {/* Bloc Battle Pass */}
       <View style={styles.battlePassContainer}>
-        <Image
-          source={battlepassImage}
-          style={styles.battlePassImage}
-        />
+        <Image source={battlepassImage} style={styles.battlePassImage} />
         <TouchableOpacity
           style={styles.purchaseButton}
           onPress={() => handlePurchase('Battle Pass', 500)}
@@ -71,10 +90,12 @@ const Boutique = () => {
         {Object.keys(items.Vetements).map((subCategory) => (
           <View key={subCategory} style={styles.subBlock}>
             <Text style={styles.subtitle}>{subCategory}</Text>
-            <ScrollView horizontal contentContainerStyle={styles.horizontalScroll}>
-              {items.Vetements[subCategory].map((item) => (
-                <View key={item.id} style={styles.itemCard}>
+            <FlatList
+              data={items.Vetements[subCategory]}
+              renderItem={({ item }) => (
+                <View style={styles.itemCard}>
                   <Image source={{ uri: item.image }} style={styles.itemImage} />
+                  <Text style={styles.itemName}>{item.name}</Text>
                   <TouchableOpacity
                     style={styles.purchaseButton}
                     onPress={() => handlePurchase(item.name, item.price)}
@@ -82,8 +103,12 @@ const Boutique = () => {
                     <Text style={styles.purchaseButtonText}>{item.price} ⚡</Text>
                   </TouchableOpacity>
                 </View>
-              ))}
-            </ScrollView>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false} 
+              contentContainerStyle={styles.horizontalScroll}
+            />
           </View>
         ))}
       </View>
@@ -91,10 +116,12 @@ const Boutique = () => {
       {/* Bloc Coffres */}
       <View style={styles.block}>
         <Text style={styles.blockTitle}>Coffres</Text>
-        <ScrollView horizontal contentContainerStyle={styles.horizontalScroll}>
-          {items.Coffres.map((item) => (
-            <View key={item.id} style={styles.itemCard}>
+        <FlatList
+          data={items.Coffres}
+          renderItem={({ item }) => (
+            <View style={styles.itemCard}>
               <Image source={{ uri: item.image }} style={styles.itemImage} />
+              <Text style={styles.itemName}>{item.name}</Text>
               <TouchableOpacity
                 style={styles.purchaseButton}
                 onPress={() => handlePurchase(item.name, item.price)}
@@ -102,8 +129,12 @@ const Boutique = () => {
                 <Text style={styles.purchaseButtonText}>{item.price} ⚡</Text>
               </TouchableOpacity>
             </View>
-          ))}
-        </ScrollView>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.horizontalScroll}
+        />
       </View>
     </ScrollView>
   );
@@ -124,11 +155,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  eclairsContainer: {
+  sportyxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  eclairsText: {
+  sportyxText: {
     fontSize: 16,
     fontWeight: 'bold',
     marginRight: 8,
@@ -171,19 +202,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   itemCard: {
-    width: 120,
-    height: 160,
+    width: Dimensions.get('window').width / 3 - 26, 
     backgroundColor: '#e8e8e8',
     borderRadius: 8,
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 10,
   },
   itemImage: {
     width: 80,
     height: 80,
     borderRadius: 8,
     marginBottom: 8,
+  },
+  itemName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    textAlign: 'center',
   },
   purchaseButton: {
     backgroundColor: '#FFD700',

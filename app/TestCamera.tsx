@@ -95,7 +95,6 @@ const CameraScreen = () => {
   if (!hasPermission) return <View />;
   if (!device) return <View />;
 
-  //console.log(pose);
   return (
     <View style={styles.container}>
       <Camera

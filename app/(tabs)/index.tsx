@@ -1,243 +1,109 @@
-import {
-  View,
-  StyleSheet,
-  PanResponder,
-  GestureResponderEvent,
-  PanResponderGestureState,
-  TouchableOpacity,
-  Text,
-} from "react-native";
-import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
-import { Renderer } from "expo-three";
-import React, { useState, useEffect, useRef } from "react";
-import {
-  AmbientLight,
-  DirectionalLight,
-  PerspectiveCamera,
-  Scene,
-  AnimationMixer,
-  Clock,
-  LoopOnce,
-  LoopRepeat,
-} from "three";
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faShirt } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { View, Image, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import BattlePassButton from "../../components/BattlePassButton";
+import QuestSlider from "../../components/QuestSlider"; 
 
-import { loadModel } from "../../utils/3d"; 
-import Profile from "../../components/Profile"; // Déplacez le fichier dans un dossier "components"
 
-import { useRouter } from 'expo-router';
-
-const modelFBX = {
-  avatar: {
-    type: "fbx",
-    name: "avatar",
-    isometric: false,
-    model: require("../../assets/3D/animationFbx.fbx"),
-    textures: [{ image: require("../../assets/3D/Image_0.jpg") }],
-    scale: {
-      x: 1,
-      y: 1,
-      z: 1,
-    },
-    position: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-    animation: {
-      path: require("../../assets/3D/animation.fbx"),
-    },
-  },
-};
-
-const onContextCreate = async (gl, selected, setModelRef, setPlayAnimation) => {
-  const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
-
-  const renderer = new Renderer({ gl });
-  renderer.setSize(width, height);
-
-  const camera = new PerspectiveCamera(75, width / height, 1, 1500);
-  camera.position.set(0, 130, 900);
-
-  const scene = new Scene();
-
-  // Lighting setup
-  const ambientLight = new AmbientLight(0xffffff, 2);
-  scene.add(ambientLight);
-
-  const directionalLight = new DirectionalLight(0xffeedd, 1.5);
-  directionalLight.position.set(100, 300, 100);
-  directionalLight.castShadow = true;
-  scene.add(directionalLight);
-
-  // Load model and animations
-  const { obj, mixer, animations } = await loadModel(selected);
-
-  // Store the current animation
-  let currentAction = null;
-
-  // Function to play a specific animation
-  const playAnimationOnce = (animationName) => {
-    const action = mixer.clipAction(animations.find(anim => anim.name === animationName));
-
-    if (currentAction) {
-      currentAction.stop();
-    }
-
-    action.setLoop(LoopOnce, 1);
-    action.reset().play();
-    currentAction = action;
-  };
-
-  const playIdleAnimation = () => {
-    const action = mixer.clipAction(animations.find(anim => anim.name === "idle"));
-
-    if (currentAction) {
-      currentAction.stop();
-    }
-
-    action.setLoop(LoopRepeat, Infinity);
-    action.reset().play();
-    currentAction = action;
-  };
-
-  obj.position.set(selected.position.x, selected.position.y, selected.position.z);
-  obj.scale.set(selected.scale.x, selected.scale.y, selected.scale.z);
-  scene.add(obj);
-
-  setModelRef(obj);
-  setPlayAnimation({ playAnimationOnce, playIdleAnimation });
-
-  let clock = new Clock();
-
-  const render = () => {
-    requestAnimationFrame(render);
-
-    if (mixer) {
-      const delta = clock.getDelta();
-      mixer.update(delta);
-    }
-
-    renderer.render(scene, camera);
-    gl.endFrameEXP();
-  };
-
-  render();
-
-  playIdleAnimation();
-};
-
-export default function HomeScreen() {
-  const router = useRouter(); // Utilisation du routeur
-  const [gl, setGL] = useState<ExpoWebGLRenderingContext | null>(null);
-  const [modelRef, setModelRef] = useState<any>(null);
-  const [playAnimation, setPlayAnimation] = useState<any>(null);
-
-  const lastTouch = useRef<{ x: number; y: number } | null>(null);
-
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: (e: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-      lastTouch.current = { x: gestureState.x0, y: gestureState.y0 };
-    },
-    onPanResponderMove: (e: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-      if (lastTouch.current && modelRef) {
-        const deltaX = gestureState.moveX - lastTouch.current.x;
-        const deltaY = gestureState.moveY - lastTouch.current.y;
-
-        modelRef.rotation.y += deltaX * 0.01;
-        modelRef.rotation.x += deltaY * 0.01;
-
-        lastTouch.current = { x: gestureState.moveX, y: gestureState.moveY };
-      }
-    },
-    onPanResponderRelease: () => {
-      lastTouch.current = null;
-    },
-  });
-
-  useEffect(() => {
-    if (gl) {
-      const selected = modelFBX.avatar;
-      onContextCreate(gl, selected, setModelRef, setPlayAnimation);
-    }
-  }, [gl]);
-
-  const handleSquattAnimation = () => {
-    if (playAnimation) {
-      playAnimation.playAnimationOnce("squatt");
-    }
-  };
-
-  const handleButtonPress = () => {
-    console.log('Bouton de cintre pressé');
-  };
-
-  const openBattlePass = () => {
-    router.push('/login_register/LoginScreen'); 
-  };
+const MainPage: React.FC = () => {
+  const router = useRouter();
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
-      <Profile />
-      <GLView
-        style={{ flex: 1 }}
-        onContextCreate={(gl) => /*setGL(gl)*/ console.log('created')}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSquattAnimation}>
-        <Text style={styles.buttonText}>Play Squatt Animation</Text>
-      </TouchableOpacity>
+    <ImageBackground source={require("../../assets/images/main_page/salle.webp")} style={styles.background}>
+      <View style={styles.container}>
+        {/* Image de fond */}
+        <Image source={require("../../assets/images/main_page/bonhomme.png")} style={styles.image} />
 
-      <TouchableOpacity style={styles.hangerButton} onPress={handleButtonPress}>
-        <FontAwesomeIcon icon={faShirt} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.battlePass} onPress={openBattlePass}>
-        <Text>Battle Pass</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Bouton paramètres en haut à droite */}
+        <TouchableOpacity style={styles.settingsButton}>
+          <View style={styles.circleButtonLarge}>
+            <MaterialCommunityIcons name="cog" size={28} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Bouton chat en bas à droite */}
+        <TouchableOpacity style={styles.chatButton} onPress={() => router.push("/Chatbot")}>
+          <View style={styles.circleButtonSmall}>
+            <MaterialCommunityIcons name="chat" size={24} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Bouton cintre en bas à droite */}
+        <TouchableOpacity style={styles.hangerButton}>
+          <View style={styles.circleButtonSmall}>
+            <MaterialCommunityIcons name="hanger" size={24} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Bouton Battle Pass */}
+        <BattlePassButton xpCurrent={356} xpMax={1000}/>
+
+        {/* Slider de quêtes */}
+        <QuestSlider />
+      </View>
+    </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    justifyContent: "center",
+    position: "relative",
   },
-  button: {
+  image: {
+    flex: 1,
+    resizeMode: "contain",
+    width: "100%",
+    height: "100%",
+  },
+  settingsButton: {
     position: "absolute",
-    bottom: 100,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#1E90FF",
-    borderRadius: 5,
+    top: 20,
+    right: 20,
+    zIndex: 10,
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
+  chatButton: {
+    position: "absolute",
+    bottom: 140,
+    right: 20,
+    zIndex: 10,
   },
   hangerButton: {
-    position: 'absolute',
-    left: '35%',
-    top: '60%',
-    transform: [{ translateY: -15 }],
-    backgroundColor: 'white',
+    position: "absolute",
+    bottom: 70,
+    right: 20,
+    zIndex: 10,
+  },
+  circleButtonSmall: {
+    width: 45,
+    height: 45,
     borderRadius: 25,
-    padding: 10,
-    elevation: 5,
-    shadowColor: '#000',
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  battlePass: {
-    position: 'absolute',
-    right: '20%',
-    bottom: '15%',
-    transform: [{ translateY: -15 }],
-    backgroundColor: 'white',
-    padding: 10,
+    shadowRadius: 3,
     elevation: 5,
   },
+  circleButtonLarge: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#e0e0e0",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 8,
+  },
 });
+
+export default MainPage;
