@@ -176,7 +176,7 @@ export default function HomeScreen() {
   };
 
   const openBattlePass = () => {
-    router.push('../../components/BattlePass'); 
+    router.push('/login_register/LoginScreen'); 
   };
 
   return (

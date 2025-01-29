@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SERVER_ADDRESS } from '@env';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -36,7 +38,7 @@ export default function LoginScreen() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/login', {
+      const response = await fetch(SERVER_ADDRESS + '/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,6 +49,7 @@ export default function LoginScreen() {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
+        await AsyncStorage.setItem('userProfile', JSON.stringify(data.userProfile));
         router.push('/');
       } else {
         setErrorMessage('Identifiant ou mot de passe incorrect.');
