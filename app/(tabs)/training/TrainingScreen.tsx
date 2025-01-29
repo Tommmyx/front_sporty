@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Image,
 } from 'react-native';
-import CameraScreen from '../../../components/Camera';
+import TestCamera from '../../TestCamera';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faVideoCamera, faX } from '@fortawesome/free-solid-svg-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -181,7 +181,7 @@ export default function TrainingScreen() {
             ) : (
                 <>  
                 {cameraUsed ? (
-                    <CameraScreen />
+                    <TestCamera />
                 ) : (
                     <View style={styles.visualContainer}>
                         <Image
