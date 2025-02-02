@@ -11,7 +11,7 @@ if (!config.resolver.assetExts) {
     config.resolver.assetExts = [];
 }
 
-["glb", "gltf", "png", "fbx", "jpg", "xjpg"].forEach((ext) => {
+["glb", "gltf", "png", "fbx", "jpg", "xjpg", "xpng"].forEach((ext) => {
     if(config.resolver.assetExts.indexOf(ext) === -1) {
         config.resolver.assetExts.push(ext);
     }

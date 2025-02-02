@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { Camera } from '@scottjgilroy/react-native-vision-camera-v4-pose-detection';
+import AvatarView from "@/components/AvatarView";
 
 // Fonction pour calculer un angle entre trois points
 const calculateAngle = (p1, p2, p3) => {
@@ -32,6 +33,8 @@ const CameraScreen = () => {
   const [moveStateSquat, setMoveStateSquat] = useState(-1); // -1: Down, 1: Up
   const [initialHeight, setInitialHeight] = useState(0);
 
+  const [selectedEmote, setSelectedEmote] = useState("idle2");
+  
   const checkCurlBiceps = (pose) => {
     if (!pose) return;
 
@@ -54,6 +57,8 @@ const CameraScreen = () => {
 
     if (moveStateCurl === 1 && angleRight > 150 && angleLeft > 150) {
       setCurlCount((prev) => prev + 1);
+      setSelectedEmote("");
+      setTimeout(() => setSelectedEmote("squatt"), 50); 
       setMoveStateCurl(0);
     }
   };
@@ -81,6 +86,7 @@ const CameraScreen = () => {
 
     if (moveStateSquat === 1 && heightPercentage > 95) {
       setSquatCount((prev) => prev + 1);
+      //setSelectedEmote("squat_animation");
       setMoveStateSquat(-1);
     }
   };
@@ -97,16 +103,19 @@ const CameraScreen = () => {
 
   return (
     <View style={styles.container}>
+      <AvatarView animation={selectedEmote} />
+      
       <Camera
         options={{
           mode: "stream",
           performanceMode: "max",
         }}
-        style={StyleSheet.absoluteFill}
+        
         device={device}
         callback={(data) => setPose(data)}
         isActive
       />
+      
       <View style={styles.overlay}>
         <Text style={styles.text}>Curls Detected: {curlCount}</Text>
         <Text style={styles.text}>Squats Detected: {squatCount}</Text>
