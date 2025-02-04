@@ -5,7 +5,8 @@ import Multi from "./Multi.jsx"
 import { OrbitControls } from "@react-three/drei";
 export default function AvatarView({ animation }) {
     return (
-        <Canvas camera={{ position: [0, 1, 13], fov: 50 }}>
+        <View style={{ width: '100%', height: '100%' }}>
+        <Canvas camera={{ position: [0, 0, 10], fov: 50 }}>
             <OrbitControls />
             <ambientLight intensity={0.6} />
             <directionalLight intensity={0.5} />
@@ -14,5 +15,6 @@ export default function AvatarView({ animation }) {
             </Suspense>
             
         </Canvas>
+        </View>
       );
 }

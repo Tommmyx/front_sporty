@@ -1,5 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Image, TouchableOpacity, Text } from "react-native";
+import { useRouter } from "expo-router";
+
 
 interface BattlePassButtonProps {
   xpCurrent: number;
@@ -7,10 +9,11 @@ interface BattlePassButtonProps {
 }
 
 const BattlePassButton: React.FC<BattlePassButtonProps> = ({ xpCurrent, xpMax }) => {
+  const router = useRouter();
   const xpPercentage = (xpCurrent / xpMax) * 100;
 
   return (
-    <TouchableOpacity style={styles.battlePassContainer}>
+    <TouchableOpacity style={styles.battlePassContainer} onPress={() => router.push("/BattlepassScreen")}>
       <View style={styles.ticketContainer}>
         <Image
           source={require("../assets/images/main_page/battlepass.png")} 

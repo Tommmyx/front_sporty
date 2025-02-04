@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Animated, Image, Text, Alert, Button } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import io from 'socket.io-client';
-import { SERVER_ADDRESS } from '@env';
+import socket from '@/utils/socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoadingMultiplayer() {
   const router = useRouter();
   const { item } = useLocalSearchParams();
   const parsedItem = item ? JSON.parse(item) : null;
-  const [socket, setSocket] = useState(null);
+  //const [socket, setSocket] = useState(null);
   const [players, setPlayers] = useState([]);
   const [canStartTraining, setCanStartTraining] = useState(false);
 
@@ -38,39 +37,39 @@ export default function LoadingMultiplayer() {
 
   useEffect(() => {
     const initializeSocket = async () => {
-      const socketConnection = io(SERVER_ADDRESS, {
-        reconnection: false,
-      });
-      setSocket(socketConnection);
-
-      socketConnection.on('connect', () => {
+      
+      socket.on('connect', () => {
         console.log('Connecté au serveur socket');
       });
 
-      socketConnection.onAny((event, ...args) => {
+      socket.onAny((event, ...args) => {
         console.log(`Événement reçu : ${event}`, args);
       });
 
-      socketConnection.on('player-joined', ({ username }) => {
+      socket.on('player-joined', ({ username }) => {
         Alert.alert('Nouveau joueur', `${username} a rejoint la room !`);
         setPlayers((prevPlayers) => [...prevPlayers, username]);
       });
 
-      socketConnection.on('player-left', ({ username }) => {
+      socket.on('player-left', ({ username }) => {
         Alert.alert('Déconnexion', `${username} a quitté la room.`);
         setPlayers((prevPlayers) => prevPlayers.filter((player) => player !== username));
       });
 
-      socketConnection.on('update-players', ({ players }) => {
+      socket.on('update-players', ({ players }) => {
         setPlayers(players);
       });
 
-      socketConnection.on('ready-to-choose-training', () => {
+      socket.on('ready-to-choose-training', () => {
         setCanStartTraining(true);
       });
 
       return () => {
-        socketConnection.disconnect();
+        socket.off('player-joined');
+        socket.off('player-left');
+        socket.off('update-players');
+        socket.off('ready-to-choose-training');
+        socket.offAny();
       };
     };
     initializeSocket();
@@ -115,10 +114,9 @@ export default function LoadingMultiplayer() {
   }, []);
 
   const startTraining = () => {
-    Alert.alert('Entraînement', 'L\'entraînement commence !');
     router.push({
       pathname: '/training',
-      params: { multiplayer: 'true' }
+      params: { multiplayer: 'true', roomCode: parsedItem?.roomCode }
 
     });
   };

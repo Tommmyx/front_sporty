@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -24,11 +24,14 @@ export default function StartTraining() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [activeTab, setActiveTab] = useState('personal');
     const [isMultiplayer, setIsMultiplayer] = useState(false);
-    const { multiplayer } = useLocalSearchParams();
+    const { multiplayer, roomCode } = useLocalSearchParams();
     
-    if(multiplayer !== undefined ) {
-        setIsMultiplayer(true);
-    }
+    
+    useEffect(() => {
+        if (multiplayer !== undefined) {
+            setIsMultiplayer(true);
+        }
+    }, [multiplayer]);
     const loadRoutines = async () => {
         try {
             const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
@@ -186,6 +189,17 @@ export default function StartTraining() {
                         Communauté
                     </Text>
                 </TouchableOpacity>
+                {isMultiplayer && (
+                    <TouchableOpacity    
+                    onPress={() => 
+                        router.push({
+                            pathname: '/(tabs)/community/MultiplayerScreen',
+                            params: { roomCode: roomCode }
+                      
+                        })}
+                    ><Text>Test Multi</Text></TouchableOpacity>
+
+                )}
             </View>
 
             {/* Liste des séances */}

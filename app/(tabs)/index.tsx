@@ -18,7 +18,7 @@ const MainPage: React.FC = () => {
       <View style={styles.container}>
         <AvatarView animation={selectedEmote} />
         
-        <TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/TestCamera")}>
+        <TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/login_register/LoginScreen")}>
           <View style={styles.circleButtonLarge}>
             <MaterialCommunityIcons name="cog" size={28} color="black" />
           </View>
@@ -30,7 +30,7 @@ const MainPage: React.FC = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.hangerButton}>
+        <TouchableOpacity style={styles.hangerButton } onPress={() => router.push("/Vestiaire")}>
           <View style={styles.circleButtonSmall}>
             <MaterialCommunityIcons name="hanger" size={24} color="black" />
           </View>
@@ -42,8 +42,11 @@ const MainPage: React.FC = () => {
             <MaterialCommunityIcons name="gesture-tap" size={24} color="black" />
           </View>
         </TouchableOpacity>
-
+       
+        
         <BattlePassButton xpCurrent={356} xpMax={1000} />
+        
+        
         <QuestSlider />
       </View>
 

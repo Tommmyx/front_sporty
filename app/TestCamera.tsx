@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { Camera } from '@scottjgilroy/react-native-vision-camera-v4-pose-detection';
 import AvatarView from "@/components/AvatarView";
+import socket from '@/utils/socket';
 
 // Fonction pour calculer un angle entre trois points
 const calculateAngle = (p1, p2, p3) => {
@@ -23,7 +24,7 @@ const calculateAngle = (p1, p2, p3) => {
 const calculateDistance = (p1, p2) => Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
 
 
-const CameraScreen = () => {
+const CameraScreen = ( {username} ) => {
   const device = useCameraDevice('front');
   const { hasPermission } = useCameraPermission();
   const [pose, setPose] = useState(null);
@@ -35,6 +36,13 @@ const CameraScreen = () => {
 
   const [selectedEmote, setSelectedEmote] = useState("idle2");
   
+  const emitAnimation = (animationName) => {
+    setSelectedEmote("");
+    setTimeout(() => setSelectedEmote(animationName), 50);
+    socket.emit('animation/' + animationName, {username});
+
+  };
+
   const checkCurlBiceps = (pose) => {
     if (!pose) return;
 
@@ -57,8 +65,7 @@ const CameraScreen = () => {
 
     if (moveStateCurl === 1 && angleRight > 150 && angleLeft > 150) {
       setCurlCount((prev) => prev + 1);
-      setSelectedEmote("");
-      setTimeout(() => setSelectedEmote("squatt"), 50); 
+      emitAnimation("squatt");
       setMoveStateCurl(0);
     }
   };
