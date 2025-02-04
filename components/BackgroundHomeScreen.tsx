@@ -4,7 +4,7 @@ import { ImageBackground, StyleSheet } from 'react-native';
 const BackgroundHomeScreen = () => {
   return (
     <ImageBackground
-      source={require('../assets/images/gifbackground.gif')} // Remplacez par l'URL de votre GIF
+      source={require('../assets/images/fond.png')} // Remplacez par l'URL de votre GIF
       style={styles.background}
       resizeMode="cover"
     >

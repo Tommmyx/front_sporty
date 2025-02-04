@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { Camera } from '@scottjgilroy/react-native-vision-camera-v4-pose-detection';
@@ -20,27 +20,22 @@ const calculateAngle = (p1, p2, p3) => {
   return Math.acos(cosineAngle) * (180 / Math.PI);
 };
 
-// Fonction pour calculer la distance entre deux points
-const calculateDistance = (p1, p2) => Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
-
-
 const CameraScreen = ( {username} ) => {
   const device = useCameraDevice('front');
   const { hasPermission } = useCameraPermission();
   const [pose, setPose] = useState(null);
   const [curlCount, setCurlCount] = useState(0);
-  const [squatCount, setSquatCount] = useState(0);
+  const [frameCount, setFrameCount] = useState(0);
   const [moveStateCurl, setMoveStateCurl] = useState(-1); // -1: Init, 0: Down, 1: Up
-  const [moveStateSquat, setMoveStateSquat] = useState(-1); // -1: Down, 1: Up
-  const [initialHeight, setInitialHeight] = useState(0);
+  const lastProcessedTime = useRef(0);
 
   const [selectedEmote, setSelectedEmote] = useState("idle2");
   
   const emitAnimation = (animationName) => {
     setSelectedEmote("");
     setTimeout(() => setSelectedEmote(animationName), 50);
+    console.log("emit anim")
     socket.emit('animation/' + animationName, {username});
-
   };
 
   const checkCurlBiceps = (pose) => {
@@ -64,44 +59,24 @@ const CameraScreen = ( {username} ) => {
     }
 
     if (moveStateCurl === 1 && angleRight > 150 && angleLeft > 150) {
-      setCurlCount((prev) => prev + 1);
-      emitAnimation("squatt");
-      setMoveStateCurl(0);
-    }
-  };
-
-  const checkSquat = (pose) => {
-    if (!pose) return;
-
-    const { rightHipPosition, rightKneePosition, rightAnklePosition } = pose;
-
-    if (!rightHipPosition || !rightKneePosition || !rightAnklePosition) return;
-
-    const height = calculateDistance(rightHipPosition, rightKneePosition) + calculateDistance(rightKneePosition, rightAnklePosition);
-
-    if (initialHeight === 0) {
-      setInitialHeight(height);
-      return;
-    }
-
-    const heightPercentage = (height / initialHeight) * 100;
-
-    if (moveStateSquat === -1 && heightPercentage < 65) {
-      setMoveStateSquat(1);
-      return;
-    }
-
-    if (moveStateSquat === 1 && heightPercentage > 95) {
-      setSquatCount((prev) => prev + 1);
-      //setSelectedEmote("squat_animation");
-      setMoveStateSquat(-1);
+      if (frameCount >= 15) {
+        setCurlCount((prev) => prev + 1);
+        setFrameCount(0); // Réinitialisation du compteur de frames
+        emitAnimation("squatt");
+        setMoveStateCurl(0);
+      } else {
+        setMoveStateCurl(-1);
+        setFrameCount(0);
+      }
     }
   };
 
   useEffect(() => {
-    if (pose) {
+    const now = Date.now();
+    if (pose && now - lastProcessedTime.current > 100) {  // 100ms interval
+      lastProcessedTime.current = now;
+      setFrameCount(prev => prev + 1);
       checkCurlBiceps(pose);
-      checkSquat(pose);
     }
   }, [pose]);
 
@@ -125,7 +100,7 @@ const CameraScreen = ( {username} ) => {
       
       <View style={styles.overlay}>
         <Text style={styles.text}>Curls Detected: {curlCount}</Text>
-        <Text style={styles.text}>Squats Detected: {squatCount}</Text>
+        <Text style={styles.text}>Frames Processed: {frameCount}</Text>
       </View>
     </View>
   );

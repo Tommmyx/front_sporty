@@ -1,21 +1,35 @@
-import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, ImageBackground, Modal, FlatList, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, TouchableOpacity, Modal, FlatList, Text, StatusBar } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import AvatarView from "@/components/AvatarView";
 import BattlePassButton from "../../components/BattlePassButton";
 import QuestSlider from "../../components/QuestSlider";
 
-const emotes = ["idle2", "squatt", "dance", "clap", "point"];
+const emotes = ["idle2", "curl", "dance", "clap", "point"];
 
 const MainPage: React.FC = () => {
   const router = useRouter();
   const [emoteWheelVisible, setEmoteWheelVisible] = useState(false);
   const [selectedEmote, setSelectedEmote] = useState("idle2");
 
+  // Cache complètement la StatusBar pour éviter la barre blanche
+  useEffect(() => {
+    StatusBar.setHidden(true);
+  }, []);
+
   return (
-    <ImageBackground source={require("../../assets/images/main_page/salle.webp")} style={styles.background}>
+    <View style={styles.fullScreen}>
+      <LinearGradient 
+        colors={["#A3E4D7", "#D4EFDF", "#FAD7A0", "#F5B7B1"]} 
+        style={StyleSheet.absoluteFillObject} // Forcer le remplissage de l'écran
+      />
+      
       <View style={styles.container}>
+        {/* Titre Sporty */}
+        <Text style={styles.title}>Sporty</Text>
+
         <AvatarView animation={selectedEmote} />
         
         <TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/login_register/LoginScreen")}>
@@ -42,11 +56,8 @@ const MainPage: React.FC = () => {
             <MaterialCommunityIcons name="gesture-tap" size={24} color="black" />
           </View>
         </TouchableOpacity>
-       
-        
+      
         <BattlePassButton xpCurrent={356} xpMax={1000} />
-        
-        
         <QuestSlider />
       </View>
 
@@ -60,7 +71,6 @@ const MainPage: React.FC = () => {
                 <TouchableOpacity
                   style={styles.emoteOption}
                   onPress={() => {
-                    //We need this to make sure the value is changed 
                     setSelectedEmote("");
                     setTimeout(() => setSelectedEmote(item), 50); 
                     setEmoteWheelVisible(false);
@@ -74,17 +84,51 @@ const MainPage: React.FC = () => {
           </View>
         </View>
       </Modal>
-    </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  container: { flex: 1, position: "relative" },
-  settingsButton: { position: "absolute", top: 20, right: 20, zIndex: 10 },
-  chatButton: { position: "absolute", bottom: 140, right: 20, zIndex: 10 },
-  hangerButton: { position: "absolute", bottom: 70, right: 20, zIndex: 10 },
-  emoteButton: { position: "absolute", bottom: 210, right: 20, zIndex: 10 },
+  fullScreen: { 
+    flex: 1, 
+    backgroundColor: "transparent" 
+  },
+  container: { 
+    flex: 1, 
+    position: "relative" 
+  },
+  title: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "white",
+  },
+  settingsButton: { 
+    position: "absolute", 
+    top: 20, 
+    right: 20, 
+    zIndex: 10 
+  },
+  chatButton: { 
+    position: "absolute", 
+    bottom: 140, 
+    right: 20, 
+    zIndex: 10 
+  },
+  hangerButton: { 
+    position: "absolute", 
+    bottom: 70, 
+    right: 20, 
+    zIndex: 10 
+  },
+  emoteButton: { 
+    position: "absolute", 
+    bottom: 210, 
+    right: 20, 
+    zIndex: 10 
+  },
   circleButtonSmall: {
     width: 45,
     height: 45,

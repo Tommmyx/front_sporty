@@ -10,21 +10,30 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"  // 🔥 Change de blanc à noir ou transparent
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.louloupiotte.testcamera"
+      "bundleIdentifier": "com.louloupiotte.testcamera",
+      "infoPlist": {
+        "UIStatusBarHidden": true,
+        "UIViewControllerBasedStatusBarAppearance": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000000" // 🔥 Évite une barre blanche au démarrage
       },
-      "package": "com.louloupiotte.testcamera"
+      "package": "com.louloupiotte.testcamera",
+      "statusBar": {
+        "backgroundColor": "transparent",
+        "translucent": true,
+        "hidden": true
+      }
     },
     "web": {
       "bundler": "metro",

@@ -79,8 +79,10 @@ const VestiaireScreen = () => {
       >
         <ArrowLeft size={32} color="#000" />
       </TouchableOpacity>
-
-      <AvatarView animation={selectedEmote} />
+      <View style={{ flex: 1, backgroundColor: "#f0f0f0" }}>
+        <AvatarView animation={selectedEmote} />
+      </View>
+        
 
       <View style={{ height: screenHeight * 0.25, backgroundColor: "#bbb" }}>
         <View style={{ flex: 0.3, flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 10 }}>

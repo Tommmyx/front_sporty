@@ -59,6 +59,7 @@ export default function MultiplayerScreen() {
           <View key={index} style={styles.playerContainer}>
             <AvatarView animation={"idle2"} />
             <Text style={styles.pseudo}>{player}</Text>
+            
           </View>
         ))}
       </View>

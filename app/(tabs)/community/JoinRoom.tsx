@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SERVER_ADDRESS } from '@env';
+//import { SERVER_ADDRESS } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -24,7 +24,7 @@ export default function JoinRoom() {
       }
       console.log(userProfile.username);
 
-      const response = await fetch(`${SERVER_ADDRESS}/is-room-joinable`, {
+      const response = await fetch(`http://192.93.212.210:8080/is-room-joinable`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

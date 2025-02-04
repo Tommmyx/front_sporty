@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SERVER_ADDRESS } from '@env';
+//import { SERVER_ADDRESS } from '@env';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function LoginScreen() {
     setErrorMessage('');
 
     try {
-      const response = await fetch(SERVER_ADDRESS + '/login', {
+      const response = await fetch("http://192.93.212.210:8080" + '/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

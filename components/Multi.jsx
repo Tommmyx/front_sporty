@@ -23,7 +23,6 @@ export default function Model({ animation, ...props }) {
       actions[animation].reset().play();
   
       const timeAnim = (actions[animation]._clip?.duration || 0) * 1000;
-      console.log(timeAnim);
   
       const timeoutId = setTimeout(() => {
         Object.values(actions).forEach((action) => action.stop());

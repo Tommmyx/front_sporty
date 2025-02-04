@@ -5,7 +5,7 @@ import { faDumbbell } from '@fortawesome/free-solid-svg-icons';
 import InputWithIcons from '../../../components/InputWithIcons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SERVER_ADDRESS } from '@env';
+//import { SERVER_ADDRESS } from '@env';
 
 export default function FriendChatPage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function FriendChatPage() {
       }
 
       const userProfile = JSON.parse(savedProfile);
-      const response = await fetch(SERVER_ADDRESS + '/create-room', {
+      const response = await fetch("http://192.93.212.210:8080" + '/create-room', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
