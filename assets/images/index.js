@@ -55,5 +55,10 @@ export default {
     // Accessoires
     chapeau1: require("./clothing/accessoire/chapeau/1.png"),
     chapeau2: require("./clothing/accessoire/chapeau/2.png"),
+
+    // Coffres
+    coffre1: require("./clothing/coffre/1.png"),
+    coffre2: require("./clothing/coffre/2.png"),
+    coffre3: require("./clothing/coffre/3.png"),
   };
   

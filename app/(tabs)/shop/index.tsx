@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import battlepassImage from '../../../assets/images/shop/battlepass.webp';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import images from "../../../assets/images";
 
 const Boutique = () => {
   const router = useRouter();
@@ -35,28 +36,28 @@ const Boutique = () => {
   const items = {
     Vetements: {
       Hauts: [
-        { id: 1, name: 'T-Shirt', price: 100, image: 'https://via.placeholder.com/100' },
-        { id: 2, name: 'Chemise', price: 150, image: 'https://via.placeholder.com/100' },
-        { id: 3, name: 'Pull', price: 200, image: 'https://via.placeholder.com/100' },
-        { id: 4, name: 'Hoodie', price: 250, image: 'https://via.placeholder.com/100' },
+        { id: 1, name: 'T-Shirt', price: 100, image: images.tshirt1 },
+        { id: 2, name: 'Chemise', price: 150, image: images.chemise1 },
+        { id: 3, name: 'Pull', price: 200, image: images.pulls1 },
+        { id: 4, name: 'Veste', price: 250, image: images.veste1 },
       ],
       Pantalons: [
-        { id: 5, name: 'Jean', price: 200, image: 'https://via.placeholder.com/100' },
-        { id: 6, name: 'Jogging', price: 120, image: 'https://via.placeholder.com/100' },
+        { id: 5, name: 'Jean', price: 200, image: images.jeans1 },
+        { id: 6, name: 'Jupe', price: 120, image: images.jupe1 },
       ],
       Chaussures: [
-        { id: 7, name: 'Baskets', price: 250, image: 'https://via.placeholder.com/100' },
-        { id: 8, name: 'Bottes', price: 300, image: 'https://via.placeholder.com/100' },
-        { id: 9, name: 'Sandales', price: 100, image: 'https://via.placeholder.com/100' },
+        { id: 7, name: 'Sneakers', price: 250, image: images.sneakers1 },
+        { id: 8, name: 'Bottes', price: 300, image: images.bottes1 },
       ],
       Accessoires: [
-        { id: 10, name: 'Casquette', price: 50, image: 'https://via.placeholder.com/100' },
-        { id: 11, name: 'Montre', price: 400, image: 'https://via.placeholder.com/100' },
+        { id: 10, name: 'Casquette', price: 50, image: images.chapeau1 },
+        { id: 11, name: 'Bob', price: 60, image: images.chapeau2 },
       ],
     },
     Coffres: [
-      { id: 12, name: 'Petit Coffre', price: 50, image: 'https://via.placeholder.com/100' },
-      { id: 13, name: 'Grand Coffre', price: 150, image: 'https://via.placeholder.com/100' },
+      { id: 12, name: 'Petit Coffre', price: 50, image: images.coffre1 },
+      { id: 13, name: 'Moyen Coffre', price: 150, image: images.coffre2 },
+      { id: 14, name: 'Grand Coffre', price: 150, image: images.coffre3 },
     ],
   };
 
@@ -94,7 +95,7 @@ const Boutique = () => {
               data={items.Vetements[subCategory]}
               renderItem={({ item }) => (
                 <View style={styles.itemCard}>
-                  <Image source={{ uri: item.image }} style={styles.itemImage} />
+                  <Image source={item.image} style={styles.itemImage} />
                   <Text style={styles.itemName}>{item.name}</Text>
                   <TouchableOpacity
                     style={styles.purchaseButton}
@@ -120,7 +121,7 @@ const Boutique = () => {
           data={items.Coffres}
           renderItem={({ item }) => (
             <View style={styles.itemCard}>
-              <Image source={{ uri: item.image }} style={styles.itemImage} />
+              <Image source={item.image} style={styles.itemImage} />
               <Text style={styles.itemName}>{item.name}</Text>
               <TouchableOpacity
                 style={styles.purchaseButton}
