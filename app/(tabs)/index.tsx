@@ -7,7 +7,7 @@ import AvatarView from "@/components/AvatarView";
 import BattlePassButton from "../../components/BattlePassButton";
 import QuestSlider from "../../components/QuestSlider";
 
-const emotes = ["idle2", "curl", "dance", "clap", "point"];
+const emotes = ["idle2", "squatt", "dance", "clap", "point"];
 
 const MainPage: React.FC = () => {
   const router = useRouter();
@@ -55,9 +55,10 @@ const MainPage: React.FC = () => {
           <View style={styles.circleButtonSmall}>
             <MaterialCommunityIcons name="gesture-tap" size={24} color="black" />
           </View>
+
         </TouchableOpacity>
       
-        <BattlePassButton xpCurrent={356} xpMax={1000} />
+        <BattlePassButton  />
         <QuestSlider />
       </View>
 

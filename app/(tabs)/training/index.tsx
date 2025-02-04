@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faX, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import socket from '@/utils/socket';
 
 export default function StartTraining() {
     const router = useRouter();
@@ -189,18 +190,22 @@ export default function StartTraining() {
                         Communauté
                     </Text>
                 </TouchableOpacity>
-                {isMultiplayer && (
-                    <TouchableOpacity    
-                    onPress={() => 
+                
+            </View>
+            {isMultiplayer && (
+                    <View style={{alignItems:'center'}}><TouchableOpacity    
+                    onPress={() => {
+                        socket.emit('start-training', { roomCode });
                         router.push({
                             pathname: '/(tabs)/community/MultiplayerScreen',
                             params: { roomCode: roomCode }
                       
-                        })}
+                        });
+                    }
+                    }
                     ><Text>Test Multi</Text></TouchableOpacity>
-
+                    </View>
                 )}
-            </View>
 
             {/* Liste des séances */}
             {renderTabContent()}

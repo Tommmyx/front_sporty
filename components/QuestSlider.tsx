@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient"; // ✅ Import du dégradé
 
 interface QuestSliderProps {
   style?: StyleProp<ViewStyle>;
@@ -39,6 +40,17 @@ const QuestSlider: React.FC<QuestSliderProps> = ({ style }) => {
         },
       ]}
     >
+       {/* ✅ Dégradé en fond pour correspondre à la page d'accueil */}
+       <LinearGradient
+        colors={[
+          "rgba(163, 228, 215, 0.85)", 
+          "rgba(212, 239, 223, 0.85)", 
+          "rgba(250, 215, 160, 0.85)", 
+          "rgba(245, 183, 177, 0.85)"
+        ]}
+        style={styles.gradientBackground}
+      />
+      
       {/* Bouton pour faire glisser le slider */}
       <TouchableOpacity style={styles.slideButton} onPress={handleSlide}>
         <View style={styles.roundedSquareButton}>
@@ -95,15 +107,18 @@ const styles = StyleSheet.create({
     right: -250, 
     width: 250,
     height: 330, 
-    backgroundColor: "#f8f8f8",
-    borderRadius: 10,
+    borderRadius: 20,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
     flexDirection: "column",
     alignItems: "center",
+  },
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 20, // 🔥 S'assure que le dégradé suit bien l'arrondi
   },
   questTab: {
     flex: 1,
@@ -115,6 +130,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
+    color: "#333", 
   },
   questItem: {
     marginBottom: 15,
@@ -126,6 +142,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3,
+    
   },
   questTitle: {
     fontSize: 16,
@@ -137,8 +154,9 @@ const styles = StyleSheet.create({
   },
   slideButton: {
     position: "absolute",
-    top: 10,
+    top: 20,
     left: -40, 
+    
   },
   roundedSquareButton: {
     width: 40, 

@@ -10,6 +10,8 @@ export default function MultiplayerScreen() {
   const { roomCode } = useLocalSearchParams();
   const [players, setPlayers] = useState([]);
   const [username, setUsername] = useState('');
+  const [playerAnimations, setPlayerAnimations] = useState({});
+
   
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -35,7 +37,6 @@ export default function MultiplayerScreen() {
     socket.emit('get-players', { roomCode });
     socket.on('update-players', ({ players }) => {
       setPlayers(players);
-      console.log(players);
     });
 
       return () => {
@@ -43,6 +44,31 @@ export default function MultiplayerScreen() {
         socket.offAny();
       };
   }, [roomCode]);
+
+
+  useEffect(() => {
+    socket.on('squatDone', ({ username }) => {
+      console.log(`Squat effectué par : ${username}`);
+  
+      setPlayerAnimations(prev => ({
+        ...prev,
+        [username]: "squatt"
+      }));
+  
+      // Remettre l'animation en idle après un délai
+      /*setTimeout(() => {
+        setPlayerAnimations(prev => ({
+          ...prev,
+          [username]: "idle2"
+        }));
+      }, 2000); */// Change après 2 secondes (ajuste selon besoin)
+    });
+  
+    return () => {
+      socket.off('squatDone');
+    };
+  }, []);
+  
 
   const changePlayerAvatarAnimation = () => {
     /*setSelectedEmote("");
@@ -55,13 +81,12 @@ export default function MultiplayerScreen() {
     <View style={styles.container}>
       
       <View style={styles.playersContent}>
-        {players.map((player, index) => (
-          <View key={index} style={styles.playerContainer}>
-            <AvatarView animation={"idle2"} />
-            <Text style={styles.pseudo}>{player}</Text>
-            
-          </View>
-        ))}
+      {players.map((player, index) => (
+        <View key={index} style={styles.playerContainer}>
+          <AvatarView animation={playerAnimations[player] || "idle2"} />
+          <Text style={styles.pseudo}>{player}</Text>
+        </View>
+      ))}
       </View>
       <CameraScreen username={username} />
     </View>
