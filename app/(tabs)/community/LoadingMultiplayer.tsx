@@ -65,14 +65,14 @@ export default function LoadingMultiplayer() {
         setCanStartTraining(true);
       });
 
-      socket.on('training-started', (data) => {
+      /*socket.on('training-started', () => {
         if(parsedItem?.roomCode != undefined) {
           router.push({
             pathname: '/(tabs)/community/MultiplayerScreen',
             params: { roomCode: parsedItem?.roomCode }
           });
         }
-      });
+      });*/
 
       return () => {
         socket.off('player-joined');

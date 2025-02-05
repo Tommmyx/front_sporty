@@ -101,7 +101,6 @@ const CameraScreen = ( {username} ) => {
       
       <View style={styles.overlay}>
         <Text style={styles.text}>Curls Detected: {curlCount}</Text>
-        <Text style={styles.text}>Frames Processed: {frameCount}</Text>
       </View>
     </View>
   );

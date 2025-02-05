@@ -11,7 +11,7 @@ export default function MultiplayerScreen() {
   const [players, setPlayers] = useState([]);
   const [username, setUsername] = useState('');
   const [playerAnimations, setPlayerAnimations] = useState({});
-
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -28,46 +28,54 @@ export default function MultiplayerScreen() {
         console.error(error);
         Alert.alert('Erreur', 'Une erreur est survenue. Veuillez réessayer plus tard.');
       }
+      finally {
+        setIsLoading(false); 
+      }
     };
     fetchUserProfile();
   }, []);
 
   useEffect(() => {
+    if (!isLoading) {
+      socket.emit('get-players', { roomCode });
     
-    socket.emit('get-players', { roomCode });
-    socket.on('update-players', ({ players }) => {
-      setPlayers(players);
-    });
+      
+      socket.on('update-players', ({ players }) => {
+        setPlayers(players);
+      });
 
-      return () => {
-        socket.off('update-players');
-        socket.offAny();
-      };
-  }, [roomCode]);
+        return () => {
+          socket.off('update-players');
+          socket.offAny();
+        };
+    }
+  }, [roomCode, isLoading]);
 
 
   useEffect(() => {
-    socket.on('curlDone', ({ username }) => {
-      console.log(`Curl effectué par : ${username}`);
-  
-      setPlayerAnimations(prev => ({
-        ...prev,
-        [username]: "Curl"
-      }));
-  
-      // Remettre l'animation en idle après un délai
-      /*setTimeout(() => {
+    if (!isLoading) {
+      socket.on('curlDone', ({ username }) => {
+        console.log(`Curl effectué par : ${username}`);
+    
         setPlayerAnimations(prev => ({
           ...prev,
-          [username]: "idle2"
+          [username]: "Curl"
         }));
-      }, 2000); */// Change après 2 secondes (ajuste selon besoin)
-    });
-  
-    return () => {
-      socket.off('curlDone');
-    };
-  }, []);
+    
+        // Remettre l'animation en idle après un délai
+        /*setTimeout(() => {
+          setPlayerAnimations(prev => ({
+            ...prev,
+            [username]: "idle2"
+          }));
+        }, 2000); */// Change après 2 secondes (ajuste selon besoin)
+      });
+    
+      return () => {
+        socket.off('curlDone');
+      };
+    }
+  }, [isLoading]);
   
 
   const changePlayerAvatarAnimation = () => {
