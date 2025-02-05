@@ -52,7 +52,7 @@ export default function Communaute() {
   ]);
 
   const handleSelect = (item) => {
-    router.push({ pathname: '/FriendChat', params: { item: JSON.stringify(item) } }); 
+    router.push({ pathname: "/(tabs)/community/FriendChat", params: { item: JSON.stringify(item) } }); 
   };
 
   const renderScene = SceneMap({

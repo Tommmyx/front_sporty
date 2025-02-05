@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faDumbbell } from '@fortawesome/free-solid-svg-icons';
-import InputWithIcons from '../components/InputWithIcons';
+import InputWithIcons from '../../../components/InputWithIcons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { SERVER_ADDRESS } from '@env';
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   chatContainer: {
-    flex: 1,
+    flex: 0.93,
     padding: 20,
   },
   chatPlaceholder: {
