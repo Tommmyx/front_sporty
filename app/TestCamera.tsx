@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
@@ -62,7 +63,7 @@ const CameraScreen = ( {username} ) => {
       if (frameCount >= 15) {
         setCurlCount((prev) => prev + 1);
         setFrameCount(0); // Réinitialisation du compteur de frames
-        emitAnimation("squatt");
+        emitAnimation("Curl");
         setMoveStateCurl(0);
       } else {
         setMoveStateCurl(-1);

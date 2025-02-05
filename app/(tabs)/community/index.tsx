@@ -3,17 +3,15 @@ import { View, Text, FlatList, Image, StyleSheet, Dimensions, TouchableOpacity }
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useRouter } from 'expo-router';
 
-
 const AmisList = [
-  { id: '1', name: 'Alice', avatar: 'https://via.placeholder.com/50' },
-  { id: '2', name: 'Bob', avatar: 'https://via.placeholder.com/50' },
-  { id: '3', name: 'Charlie', avatar: 'https://via.placeholder.com/50' },
+  { id: '1', name: 'Lou', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
+  { id: '2', name: 'Cédric', avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
+  { id: '3', name: 'Noura', avatar: 'https://randomuser.me/api/portraits/women/50.jpg' },
 ];
 
 const GroupesList = [
-  { id: '1', name: 'React Lovers', avatar: 'https://via.placeholder.com/50' },
-  { id: '2', name: 'Fitness Friends', avatar: 'https://via.placeholder.com/50' },
-  { id: '3', name: 'Book Club', avatar: 'https://via.placeholder.com/50' },
+  { id: '1', name: '🚀 Les fous de muscu' },
+  { id: '2', name: '🏋️ Fitness Friends' },
 ];
 
 const ListeAmis = ({ onSelect }) => (
@@ -38,8 +36,7 @@ const ListeGroupes = ({ onSelect }) => (
     renderItem={({ item }) => (
       <TouchableOpacity onPress={() => onSelect(item)}>
         <View style={styles.itemContainer}>
-          <Image source={{ uri: item.avatar }} style={styles.avatar} />
-          <Text style={styles.itemText}>{item.name}</Text>
+          <Text style={styles.emoji}>{item.name}</Text>
         </View>
       </TouchableOpacity>
     )}
@@ -55,7 +52,7 @@ export default function Communaute() {
   ]);
 
   const handleSelect = (item) => {
-    router.push({ pathname: '/community/FriendChat', params: { item: JSON.stringify(item) } }); 
+    router.push({ pathname: '/FriendChat', params: { item: JSON.stringify(item) } }); 
   };
 
   const renderScene = SceneMap({
@@ -64,7 +61,7 @@ export default function Communaute() {
   });
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
@@ -85,20 +82,34 @@ export default function Communaute() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF", // ✅ Fond blanc
+  },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    padding: 12,
+    borderRadius: 10, // ✅ Arrondi moderne
+    marginVertical: 6, 
+    marginHorizontal: 10,
+    backgroundColor: "rgba(180, 230, 220, 0.9)", // ✅ Bleu pastel pour les cartes amis/groupes
   },
   avatar: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 25, // ✅ Avatar rond
     marginRight: 10,
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.9)", // ✅ Bordure blanche subtile autour des avatars
   },
   itemText: {
     fontSize: 16,
+    color: "#333", // ✅ Texte noir foncé pour la lisibilité
   },
+  emoji: {
+    fontSize: 18,
+    color: "#333", 
+    paddingVertical: 5, 
+  }
 });

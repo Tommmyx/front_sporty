@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faDumbbell } from '@fortawesome/free-solid-svg-icons';
-import InputWithIcons from '../../../components/InputWithIcons';
+import InputWithIcons from '../components/InputWithIcons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { SERVER_ADDRESS } from '@env';
@@ -60,7 +60,7 @@ export default function FriendChatPage() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.rightHeader}>
-          <TouchableOpacity style={styles.back} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.back} onPress={() => router.push("/community")}>
             <Text style={styles.backButtonText}>⟵</Text>
           </TouchableOpacity>
           <Image source={{ uri: parsedItem?.avatar }} style={styles.avatar} />

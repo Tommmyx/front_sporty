@@ -118,7 +118,7 @@ export default function StartTraining() {
 
     const startActivity = () => {
         closeModal();
-        router.push({ pathname: '/(tabs)/training/TrainingScreen', params: { routine: JSON.stringify(selectedRoutine) } });
+        router.push({ pathname: '/TrainingScreen', params: { routine: JSON.stringify(selectedRoutine) } });
     };
 
     const addRoutine = () => {

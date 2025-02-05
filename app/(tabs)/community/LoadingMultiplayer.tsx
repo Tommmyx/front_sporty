@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated, Image, Text, Alert, Button } from 'react-native';
+import { View, StyleSheet, Animated, Image, Text, Alert, Button, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import socket from '@/utils/socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ArrowLeft } from "lucide-react-native";
 
 export default function LoadingMultiplayer() {
   const router = useRouter();
@@ -64,6 +65,15 @@ export default function LoadingMultiplayer() {
         setCanStartTraining(true);
       });
 
+      socket.on('training-started', (data) => {
+        if(parsedItem?.roomCode != undefined) {
+          router.push({
+            pathname: '/(tabs)/community/MultiplayerScreen',
+            params: { roomCode: parsedItem?.roomCode }
+          });
+        }
+      });
+
       return () => {
         socket.off('player-joined');
         socket.off('player-left');
@@ -123,6 +133,12 @@ export default function LoadingMultiplayer() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => router.push("/(tabs)/community")}
+        style={{ position: "absolute", top: 20, left: 20, zIndex: 10 }}
+      >
+        <ArrowLeft size={32} color="#000" />
+      </TouchableOpacity>
       {parsedItem?.roomCode && (
         <Text style={styles.roomCodeText}>Room : {parsedItem.roomCode}</Text>
       )}

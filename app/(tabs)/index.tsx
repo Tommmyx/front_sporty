@@ -7,7 +7,7 @@ import AvatarView from "@/components/AvatarView";
 import BattlePassButton from "../../components/BattlePassButton";
 import QuestSlider from "../../components/QuestSlider";
 
-const emotes = ["idle2", "squatt", "dance", "clap", "point"];
+const emotes = ["Squat", "Danse", "Curl", "Priere", "Twerk"];
 
 const MainPage: React.FC = () => {
   const router = useRouter();
@@ -20,11 +20,11 @@ const MainPage: React.FC = () => {
   }, []);
 
   return (
+    <LinearGradient colors={["rgba(180, 230, 220, 0.9)", "rgba(225, 240, 230, 0.9)", "rgba(255, 225, 180, 0.9)", "rgba(250, 200, 190, 0.9)"]} style={StyleSheet.absoluteFillObject}>
+    
     <View style={styles.fullScreen}>
-      <LinearGradient 
-        colors={["#A3E4D7", "#D4EFDF", "#FAD7A0", "#F5B7B1"]} 
-        style={StyleSheet.absoluteFillObject} // Forcer le remplissage de l'écran
-      />
+  
+
       
       <View style={styles.container}>
         {/* Titre Sporty */}
@@ -86,6 +86,7 @@ const MainPage: React.FC = () => {
         </View>
       </Modal>
     </View>
+    </LinearGradient>
   );
 };
 
@@ -96,7 +97,8 @@ const styles = StyleSheet.create({
   },
   container: { 
     flex: 1, 
-    position: "relative" 
+    position: "relative" ,
+    
   },
   title: {
     position: "absolute",

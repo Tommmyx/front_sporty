@@ -47,12 +47,12 @@ export default function MultiplayerScreen() {
 
 
   useEffect(() => {
-    socket.on('squatDone', ({ username }) => {
-      console.log(`Squat effectué par : ${username}`);
+    socket.on('curlDone', ({ username }) => {
+      console.log(`Curl effectué par : ${username}`);
   
       setPlayerAnimations(prev => ({
         ...prev,
-        [username]: "squatt"
+        [username]: "Curl"
       }));
   
       // Remettre l'animation en idle après un délai
@@ -65,7 +65,7 @@ export default function MultiplayerScreen() {
     });
   
     return () => {
-      socket.off('squatDone');
+      socket.off('curlDone');
     };
   }, []);
   
@@ -81,7 +81,7 @@ export default function MultiplayerScreen() {
     <View style={styles.container}>
       
       <View style={styles.playersContent}>
-      {players.map((player, index) => (
+      {players.filter(player => player !== username).map((player, index) => (
         <View key={index} style={styles.playerContainer}>
           <AvatarView animation={playerAnimations[player] || "idle2"} />
           <Text style={styles.pseudo}>{player}</Text>

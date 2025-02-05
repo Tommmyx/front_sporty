@@ -6,8 +6,8 @@
 
 /* Définition des styles de base */
 :root {
-    --primary-color: #4f46e5; /* Couleur principale (indigo) */
-    --secondary-color: #10b981; /* Couleur secondaire (vert) */
+    --primary-color: "rgba(180, 230, 220, 0.9)";  /* Couleur principale (indigo) */
+    --secondary-color: "rgba(225, 240, 230, 0.9)"; /* Couleur secondaire (vert) */
     --background-color: #ffffff; /* Couleur de fond par défaut */
     --text-color: #1f2937; /* Couleur du texte (gris foncé) */
   }

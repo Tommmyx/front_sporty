@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Dimensions, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions, ScrollView, Image, StyleSheet } from "react-native";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
-import bonhomme from "../assets/images/main_page/bonhomme.png";
-import battlepassImage from "../assets/images/shop/battlepass.webp";
+import { LinearGradient } from "expo-linear-gradient";
 import AvatarView from "@/components/AvatarView";
 import images from "../assets/images";
 
@@ -109,65 +108,59 @@ const VestiaireScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f0f0f0" }}>
-      <TouchableOpacity
-        onPress={() => router.back()}
-        style={{ position: "absolute", top: 20, left: 20, zIndex: 10 }}
-      >
-        <ArrowLeft size={32} color="#000" />
-      </TouchableOpacity>
-      <View style={{ flex: 1, backgroundColor: "#f0f0f0" }}>
-        <AvatarView animation={selectedEmote} />
-      </View>
-        
-
-      <View style={{ height: screenHeight * 0.25, backgroundColor: "#bbb" }}>
-        <View style={{ flex: 0.3, flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 10 }}>
-          {Object.entries(categoryIcons).map(([category, icon]) => (
-            <TouchableOpacity
-              key={category}
-              onPress={() => { setSelectedCategory(category); setSelectedSubCategoryIndex(0); }}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 10,
-                backgroundColor: selectedCategory === category ? "#777" : "#999",
-                marginHorizontal: 5,
-                borderRadius: 20,
-              }}
-            >
-              {icon}
-            </TouchableOpacity>
-          ))}
+    <LinearGradient colors={["rgba(180, 230, 220, 0.9)", "rgba(225, 240, 230, 0.9)", "rgba(255, 225, 180, 0.9)", "rgba(250, 200, 190, 0.9)"]} style={StyleSheet.absoluteFillObject}>
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <ArrowLeft size={32} color="#000" />
+        </TouchableOpacity>
+        <View style={{ flex: 0.95 }}>
+          <AvatarView animation={selectedEmote} />
         </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, backgroundColor: '#666', paddingVertical: 5 }}>
-          <TouchableOpacity onPress={prevSubCategory}>
-            <ChevronLeft size={24} color="#fff" />
-          </TouchableOpacity>
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>{selectedSubCategory}</Text>
-          <TouchableOpacity onPress={nextSubCategory}>
-            <ChevronRight size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ flex: 0.7, backgroundColor: "#888", padding: 10 }}>
-          {selectedCategory && selectedSubCategory && allItems[selectedCategory][selectedSubCategory] ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {allItems[selectedCategory][selectedSubCategory].map((item, idx) => (
-                <View key={idx} style={{ alignItems: "center", marginRight: 10 }}>
-                  <Image source={item.image} style={{ width: 85, height: 90, borderRadius: 10 }} />
-                </View>
-              ))}
-            </ScrollView>
-          ) : (
-            <Text style={{ textAlign: "center", color: "#fff" }}>Aucune sous-catégorie sélectionnée</Text>
-          )}
+        <View style={{ height: screenHeight * 0.25, backgroundColor: "#bbb" }}>
+          <View style={styles.categoryContainer}>
+            {Object.entries(categoryIcons).map(([category, icon]) => (
+              <TouchableOpacity
+                key={category}
+                onPress={() => { setSelectedCategory(category); setSelectedSubCategoryIndex(0); }}
+                style={[styles.categoryButton, selectedCategory === category && styles.selectedCategory]}
+              >
+                {icon}
+              </TouchableOpacity>
+            ))}
+          </View>
+          <View style={styles.subCategoryContainer}>
+            <TouchableOpacity onPress={prevSubCategory}><ChevronLeft size={24} color="#fff" /></TouchableOpacity>
+            <Text style={styles.subCategoryText}>{selectedSubCategory}</Text>
+            <TouchableOpacity onPress={nextSubCategory}><ChevronRight size={24} color="#fff" /></TouchableOpacity>
+          </View>
+          <View style={styles.itemsContainer}>
+            {selectedCategory && selectedSubCategory && allItems[selectedCategory][selectedSubCategory] ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {allItems[selectedCategory][selectedSubCategory].map((item, idx) => (
+                  <View key={idx} style={styles.itemWrapper}>
+                    <Image source={item.image} style={styles.itemImage} />
+                  </View>
+                ))}
+              </ScrollView>
+            ) : (
+              <Text style={styles.noCategoryText}>Aucune sous-catégorie sélectionnée</Text>
+            )}
+          </View>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
-
+const styles = StyleSheet.create({
+  backButton: { position: "absolute", top: 20, left: 20, zIndex: 10 },
+  categoryContainer: { flex: 0.3, flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 10 },
+  categoryButton: { flex: 1, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: "#999", marginHorizontal: 5, borderRadius: 20 },
+  selectedCategory: { backgroundColor: "#777" },
+  subCategoryContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, backgroundColor: '#666', paddingVertical: 5 },
+  subCategoryText: { color: "#fff", fontWeight: "bold" },
+  itemsContainer: { flex: 0.7, backgroundColor: "#888", padding: 10 },
+  itemWrapper: { alignItems: "center", marginRight: 10 },
+  itemImage: { width: 85, height: 90, borderRadius: 10 },
+  noCategoryText: { textAlign: "center", color: "#fff" }
+});
 export default VestiaireScreen;

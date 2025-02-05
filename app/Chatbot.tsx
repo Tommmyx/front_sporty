@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'expo-router';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([{ id: '1', text: 'Bonjour ! Posez-moi une question sur le sport.', sender: 'bot' }]);
   const [inputText, setInputText] = useState('');
+  const router = useRouter();
 
   const handleSend = () => {
     if (inputText.trim() === '') return;
@@ -25,21 +29,54 @@ const Chatbot = () => {
     </View>
   );
 
+  const handleBackToHome = () => {
+    router.push({ pathname: "/(tabs)" });
+  };
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+      
+      {/* Haut de page */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBackToHome} style={styles.backButton}>
+          <FontAwesomeIcon icon={faArrowLeft} size={20} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.title}>ChatBot</Text>
+      </View>
+
       <FlatList data={messages} keyExtractor={(item) => item.id} renderItem={renderMessage} contentContainerStyle={styles.messagesContainer} />
+      
       <View style={styles.inputContainer}>
         <TextInput style={styles.input} placeholder="Écrivez votre message..." value={inputText} onChangeText={setInputText} />
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
           <Text style={styles.sendButtonText}>Envoyer</Text>
         </TouchableOpacity>
       </View>
+      
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    backgroundColor: '#fff',
+  },
+  backButton: {
+    padding: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
+  },
   messagesContainer: { padding: 10 },
   messageBubble: { padding: 10, borderRadius: 10, marginBottom: 10, maxWidth: '80%' },
   botMessage: { alignSelf: 'flex-start', backgroundColor: '#e1f5fe' },
