@@ -56,8 +56,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   image: {
+    flex: 1,
     width: 100,
     height: 70,
+    resizeMode: 'contain',
   },
   hexagon: {
     position: 'absolute',

@@ -5,6 +5,7 @@ import battlepassImage from "../assets/images/shop/battlepass.webp";
 import BattleSection from "../components/Battlepasslevel";
 import { ArrowLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import images from "../assets/images";
 
 
 const HeaderWithXP = () => {
@@ -59,9 +60,26 @@ const HeaderWithXP = () => {
 
       {/* ScrollView contenant toutes les BattleSections */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
-        {Array.from({ length: 30 }, (_, index) => (
-          <BattleSection key={index + 1} level={index + 1} leftImage={battlepassImage} rightImage={battlepassImage} />
-        ))}
+        <BattleSection key={1} level={1} leftImage={images.sportyx2} rightImage={images.sportyx4} />
+        <BattleSection key={2} level={2} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={3} level={3} leftImage={images.sportyx1} rightImage={images.coffrebp2} />
+        <BattleSection key={4} level={4} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={5} level={5} leftImage={images.coffrebp1} rightImage={images.mds1} />
+        <BattleSection key={6} level={6} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={7} level={7} leftImage={images.sportyx1} rightImage={images.coffrebp2} />
+        <BattleSection key={8} level={8} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={9} level={9} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={10} level={10} leftImage={images.coffrebp1} rightImage={images.mds2} />
+        <BattleSection key={11} level={11} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={12} level={12} leftImage={images.sportyx1} rightImage={images.coffrebp2} />
+        <BattleSection key={13} level={13} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={14} level={14} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={15} level={15} leftImage={images.coffrebp1} rightImage={images.mds3} />
+        <BattleSection key={16} level={16} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={17} level={17} leftImage={images.sportyx1} rightImage={images.coffrebp3} />
+        <BattleSection key={18} level={18} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={19} level={19} leftImage={images.sportyx1} rightImage={images.sportyx2} />
+        <BattleSection key={20} level={20} leftImage={images.coffrebp3} rightImage={images.mds4} />
       </ScrollView>
     </View>
   );
