@@ -60,5 +60,23 @@ export default {
     coffre1: require("./clothing/coffre/1.png"),
     coffre2: require("./clothing/coffre/2.png"),
     coffre3: require("./clothing/coffre/3.png"),
+
+    // BattlePass
+    sportyx1: require("./battlepass/50Sportyx.png"),
+    sportyx2: require("./battlepass/100Sportyx.png"),
+    sportyx3: require("./battlepass/200Sportyx.png"),
+    sportyx4: require("./battlepass/500Sportyx.png"),
+
+    coffrebp1: require("./battlepass/coffre1.png"),
+    coffrebp2: require("./battlepass/coffre2.png"),
+    coffrebp3: require("./battlepass/coffre3.png"),
+
+    casquettebp1: require("./battlepass/casquette.png"),
+
+    // MDS
+    mds1: require("./battlepass/mds1.png"),
+    mds2: require("./battlepass/mds2.png"),
+    mds3: require("./battlepass/mds3.png"),
+    mds4: require("./battlepass/mds4.png"),
   };
   
