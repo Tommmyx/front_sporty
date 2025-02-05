@@ -64,21 +64,11 @@ export default function LoadingMultiplayer() {
         setCanStartTraining(true);
       });
 
-
-      socket.on('training-started', (data) => {
-        router.push({
-          pathname: '/(tabs)/community/MultiplayerScreen',
-          params: { roomCode: parsedItem?.roomCode }
-    
-        });
-      });
-
       return () => {
         socket.off('player-joined');
         socket.off('player-left');
         socket.off('update-players');
         socket.off('ready-to-choose-training');
-        socket.off('training-started');
         socket.offAny();
       };
     };
